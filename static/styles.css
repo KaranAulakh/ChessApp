@@ -1,0 +1,29 @@
+/*
+ * Maybe I can add the background color in #app and get rid of body, html
+ * However, I was getting a white border around the screen 
+ */
+body, html {
+    background-color: #153448; 
+}
+
+#app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#chessboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: 15px;
+}
+
+
