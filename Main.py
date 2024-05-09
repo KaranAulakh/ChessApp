@@ -10,12 +10,16 @@ gameState = GameState()
 def index():
     return render_template('chessboard.html')
 
-# Takes Argument move which is the previous move in chess notation, or Start to initalize the game
-@app.route('/piece-positions')
-def piece_positions():
-    move = request.args.get('move', 'Start')
-    positions = gameState.generate_piece_positions(move)
-    return jsonify(positions)
+# Takes Argument move which is the previous move in chess notation, or 'start' to initalize the game
+@app.route('/get-piece-positions')
+def get_position():
+    move = request.args.get('move', 'start')
+    if (move == 'start'):
+        return jsonify(gameState.piece_positions)
+    else:
+        return jsonify(gameState.move(move))
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
+    #app.run(debug=true)

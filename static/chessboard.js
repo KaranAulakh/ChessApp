@@ -11,7 +11,7 @@ Vue.component('chess-board', {
     },
     async mounted() {
         await this.loadImages();
-        Position = this.fetchPiecePositions("Start");
+        await this.fetchPiecePositions("start");
         this.$refs.canvas.addEventListener('click', this.handleClick);
         window.addEventListener('resize', this.handleResize); // Listen for window resize events
         this.handleResize(); // Call handleResize initially to ensure proper scaling
@@ -46,9 +46,8 @@ Vue.component('chess-board', {
         },
         async fetchPiecePositions(move) {
             try {
-                const response = await fetch(`/piece-positions?move=${move}`);
-                const data = await response.json();
-                this.position = data;
+                const response = await fetch(`/get-piece-positions?move=${move}`);
+                this.position = await response.json();
                 // Once positions are fetched, draw the chessboard
                 this.drawChessboard();
             } catch (error) {
