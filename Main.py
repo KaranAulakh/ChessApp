@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request
-from game.gameState import GameState
+from game.GameState import GameState
 
 
 app = Flask(__name__)

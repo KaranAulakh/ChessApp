@@ -80,7 +80,7 @@ Vue.component('chess-board', {
         },
         drawPieces(context) {
             for (const key in this.position) {
-                context.drawImage(this.images[this.position[key]], key[0] * 64, key[1] * 64, 64, 64);
+                context.drawImage(this.images[this.position[key].imageName], key[0] * 64, key[1] * 64, 64, 64);
             }
         },
         highlightSquares(context) {
@@ -127,13 +127,13 @@ Vue.component('chess-board', {
             if 
             (this.whiteToMove && 
              this.position[x.toString() + y.toString()] !== undefined && 
-             this.position[x.toString() + y.toString()].includes("Light"))
+             this.position[x.toString() + y.toString()].isWhite)
                 this.highlightedSquares = [x.toString() + y.toString()]
 
             else if 
             (!this.whiteToMove && 
              this.position[x.toString() + y.toString()] !== undefined && 
-             this.position[x.toString() + y.toString()].includes("Dark"))
+             !this.position[x.toString() + y.toString()].isWhite)
                 this.highlightedSquares = [x.toString() + y.toString()]
                 
             else

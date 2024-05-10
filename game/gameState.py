@@ -1,4 +1,4 @@
-from game.util import Util
+from game.Util import Util
 
 class GameState:
     piece_positions = {}
