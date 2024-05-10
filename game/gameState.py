@@ -1,4 +1,4 @@
-from game.Util import Util
+from .Util import Util
 
 class GameState:
     piece_positions = {}
@@ -6,8 +6,12 @@ class GameState:
     def __init__(self):
         self.piece_positions = Util.get_start_piece_positions()
 
-    def get_piece_at(self, x, y):
-        return self.piece_positions["{x}{y}"]
+    def get_seralized_piece_positions(self):
+        serialized_positions = {}
+        for position, piece in self.piece_positions.items():
+            serialized_positions[position] = piece.name  
     
-    def move(self, move):
-        return move
+        return serialized_positions
+    
+    def find_moves(self, square):
+        return self.piece_positions[square].calculatePossibleMoves(square)

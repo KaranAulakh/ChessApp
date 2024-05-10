@@ -6,6 +6,7 @@ Vue.component('chess-board', {
             images: {},
             position: {},
             highlightedSquares: [],
+            possibleMoves: [],
             whiteToMove: true,
         };
     },
@@ -54,6 +55,14 @@ Vue.component('chess-board', {
                 console.error('Error fetching piece positions:', error);
             }
         },
+        async fetchPossibleMoves(square) {
+            try {
+                const response = await fetch(`/get-possible-moves?square=${square}`);
+                this.possibleMoves = await response.json();
+            } catch (error) {
+                console.error('Error fetching piece positions:', error);
+            }
+        },
         async drawChessboard() {
             const canvas = this.$refs.canvas;
             const context = canvas.getContext('2d');
@@ -80,7 +89,7 @@ Vue.component('chess-board', {
         },
         drawPieces(context) {
             for (const key in this.position) {
-                context.drawImage(this.images[this.position[key].imageName], key[0] * 64, key[1] * 64, 64, 64);
+                context.drawImage(this.images[this.position[key]], key[0] * 64, key[1] * 64, 64, 64);
             }
         },
         highlightSquares(context) {
@@ -89,6 +98,21 @@ Vue.component('chess-board', {
             const offset = 8;
             
             this.highlightedSquares.forEach(square => {
+                const x = parseInt(square.charAt(0)) * 64 + offset / 2; 
+                const y = parseInt(square.charAt(1)) * 64 + offset / 2;
+            
+                context.fillStyle = HIGHLIGHT_COLOR;
+                context.beginPath();
+                context.moveTo(x + cornerRadius, y);
+                context.arcTo(x + 64 - offset, y, x + 64 - offset, y + cornerRadius, cornerRadius);
+                context.arcTo(x + 64 - offset, y + 64 - offset, x + 64 - cornerRadius, y + 64 - offset, cornerRadius);
+                context.arcTo(x, y + 64 - offset, x, y + 64 - cornerRadius, cornerRadius);
+                context.arcTo(x, y, x + cornerRadius, y, cornerRadius);
+                context.closePath();
+                context.fill();
+            });
+
+            this.possibleMoves.forEach(square => {
                 const x = parseInt(square.charAt(0)) * 64 + offset / 2; 
                 const y = parseInt(square.charAt(1)) * 64 + offset / 2;
             
@@ -118,28 +142,35 @@ Vue.component('chess-board', {
             });
             */
         },
-        handleClick(event) {
+        async handleClick(event) {
+            this.possibleMoves = []
             const canvas = this.$refs.canvas;
             const rect = canvas.getBoundingClientRect();
             const x = Math.floor((event.clientX - rect.left) / 64);
             const y = Math.floor((event.clientY - rect.top) / 64);
-            /* How in the world do I format this to not look like shit? */
+            // will clean this up, use !! and a ternary to assign light or dark string
             if 
             (this.whiteToMove && 
              this.position[x.toString() + y.toString()] !== undefined && 
-             this.position[x.toString() + y.toString()].isWhite)
+             this.position[x.toString() + y.toString()].includes("Light")) {
                 this.highlightedSquares = [x.toString() + y.toString()]
+                await this.fetchPossibleMoves(x.toString() + y.toString())
+            } 
 
             else if 
             (!this.whiteToMove && 
              this.position[x.toString() + y.toString()] !== undefined && 
-             !this.position[x.toString() + y.toString()].isWhite)
+             this.position[x.toString() + y.toString()].includes("Dark")) {
                 this.highlightedSquares = [x.toString() + y.toString()]
-                
+                await this.fetchPossibleMoves(x.toString() + y.toString())
+            }
+
             else
                 this.highlightedSquares = [];
+
+            // why is this line not printing each move?
+            console.log(this.possibleMoves)
             this.drawChessboard()
-            
         },
         handleResize() {
             // Redraw the chessboard, will probably need to seen in new dimensions

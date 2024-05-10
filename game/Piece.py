@@ -1,10 +1,9 @@
 class Piece:
     name = None
     isWhite = None
-    imageName = None
 
-    def __init__(self, name, isWhite, imageName):
-        self.name, self.isWhite, self.imageName = name, isWhite, imageName
+    def __init__(self, name, isWhite):
+        self.name, self.isWhite = name, isWhite
 
-    def caputured():
-        pass
+    def calculatePossibleMoves():
+        NotImplementedError("Subclass Must Implement this Method")
