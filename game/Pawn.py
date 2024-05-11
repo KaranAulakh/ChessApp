@@ -11,33 +11,25 @@ class Pawn(Piece):
         self.promotion_row = 0 if isWhite else 7
         self.move_increment = -1 if isWhite else 1
 
+    # Return a an array of strings of xy coordinates of all possible moves
     def calculatePossibleMoves(self, square, piece_positions):
         possible_moves = []
-        x = int(square[0])
-        y = int(square[1]) + self.move_increment
+        x, y = int(square[0]), int(square[1]) + self.move_increment
         opponent = "Black" if self.isWhite else "White"
 
 
-        # Add possible captures
-        print(str(x+1) + str(y) in piece_positions and opponent in (piece_positions[str(x+1) + str(y)].name))
-        if (str(x+1) + str(y) in piece_positions and opponent in (piece_positions[str(x+1) + str(y)].name)):
-            possible_moves.append(str(x+1) + str(y))
-        
-        print(str(x-1) + str(y) in piece_positions and opponent in piece_positions[str(x-1) + str(y)].name)
-        if (str(x-1) + str(y) in piece_positions and opponent in piece_positions[str(x-1) + str(y)].name):
-            possible_moves.append(str(x-1) + str(y))
+        # Check for captures
+        for dx in [-1, 1]:
+            if str(x + dx) + str(y) in piece_positions and opponent in piece_positions[str(x + dx) + str(y)].name:
+                possible_moves.append(str(x + dx) + str(y))
         
         # Add single space advance or return if blocked
-        if (str(x) + str(y) in piece_positions or y < 0 or y > 7):
-            return possible_moves
-        possible_moves.append(str(x) + str(y))
-
-        # Add double space advance if available
-        if (self.start_row == int(square[1])):
+        if (str(x) + str(y) not in piece_positions and 0 <= y <= 7):
+            possible_moves.append(str(x) + str(y))
+            # Add double space advance if available
             y += self.move_increment
-            if (str(x) + str(y) in piece_positions or y < 0 or y > 7):
-                return possible_moves
-            possible_moves.append(str(square[0]) + str(y))
+            if (self.start_row == int(square[1]) and str(x) + str(y) not in piece_positions and 0 <= y <= 7):
+                possible_moves.append(str(square[0]) + str(y))
 
         return possible_moves
 
