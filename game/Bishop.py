@@ -1,18 +1,16 @@
 from .Piece import Piece
 
-class Rook(Piece):
-    is_first_move = True
-
+class Bishop(Piece):
     def __init__(self, isWhite):
-        super().__init__("WhiteRook" if isWhite else "BlackRook", isWhite)
+        super().__init__("WhiteBishop" if isWhite else "BlackBishop", isWhite)
 
     def calculate_possible_moves(self, square, piece_positions):
         possible_moves = []
         x, y = int(square[0]), int(square[1])
         opponent = "Black" if self.isWhite else "White"
         
-        # check moves to the right, left, up, down respectively 
-        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        # check moves to the top-right, top-left, bottom-right, bottom-left respectively
+        directions = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
         for dx, dy in directions:
             x_increment, y_increment = x + dx, y + dy
             while 0 <= x_increment <= 7 and 0 <= y_increment <= 7:

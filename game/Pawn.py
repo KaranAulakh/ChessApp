@@ -5,13 +5,12 @@ class Pawn(Piece):
     start_row = None
     move_increment = None
 
-    def __init__(self, name, isWhite):
-        super().__init__(name, isWhite)
+    def __init__(self, isWhite):
+        super().__init__("WhitePawn" if isWhite else "BlackPawn", isWhite)
         self.start_row = 6 if isWhite else 1
         self.promotion_row = 0 if isWhite else 7
         self.move_increment = -1 if isWhite else 1
 
-    # Return a an array of strings of xy coordinates of all possible moves
     def calculate_possible_moves(self, square, piece_positions):
         possible_moves = []
         x, y = int(square[0]), int(square[1]) + self.move_increment
