@@ -48,7 +48,7 @@ Vue.component('chess-board', {
                 this.selectedSquare = null;
             }
             // Select Piece
-            else if (!!this.position[clickPosition] && this.position[clickPosition].includes(this.whiteToMove ? "Light" : "Dark")) {
+            else if (!!this.position[clickPosition] && this.position[clickPosition].includes(this.whiteToMove ? "White" : "Black")) {
                 await this.fetchPossibleMoves(clickPosition);
                 this.selectedSquare = clickPosition;
             } 
@@ -88,6 +88,7 @@ Vue.component('chess-board', {
         },
         
         drawPieces(context) {
+            console.log(this.position)
             for (const key in this.position) {
                 context.drawImage(this.images[this.position[key]], key[0] * 64, key[1] * 64, 64, 64);
             }
@@ -101,7 +102,6 @@ Vue.component('chess-board', {
             this.drawCircle(context, 0, 0, this.selectedSquare, color)
 
             // highlight possible moves
-
             if (!this.possibleMoves) 
                 return;
             this.possibleMoves.forEach(square => {   
@@ -161,18 +161,18 @@ Vue.component('chess-board', {
          */
         async loadImages() {
             const imageSources = {
-                "LightPawn": '/static/images/LightPawn.png',
-                "LightKnight": '/static/images/LightKnight.png',
-                "LightBishop": '/static/images/LightBishop.png',
-                "LightRook": '/static/images/LightRook.png',
-                "LightQueen": '/static/images/LightQueen.png',
-                "LightKing": '/static/images/LightKing.png',
-                "DarkPawn": '/static/images/DarkPawn.png',
-                "DarkKnight": '/static/images/DarkKnight.png',
-                "DarkBishop": '/static/images/DarkBishop.png',
-                "DarkRook": '/static/images/DarkRook.png',
-                "DarkQueen": '/static/images/DarkQueen.png',
-                "DarkKing": '/static/images/DarkKing.png',
+                "WhitePawn": '/static/images/WhitePawn.png',
+                "WhiteKnight": '/static/images/WhiteKnight.png',
+                "WhiteBishop": '/static/images/WhiteBishop.png',
+                "WhiteRook": '/static/images/WhiteRook.png',
+                "WhiteQueen": '/static/images/WhiteQueen.png',
+                "WhiteKing": '/static/images/WhiteKing.png',
+                "BlackPawn": '/static/images/BlackPawn.png',
+                "BlackKnight": '/static/images/BlackKnight.png',
+                "BlackBishop": '/static/images/BlackBishop.png',
+                "BlackRook": '/static/images/BlackRook.png',
+                "BlackQueen": '/static/images/BlackQueen.png',
+                "BlackKing": '/static/images/BlackKing.png',
             };
 
             await Promise.all(Object.keys(imageSources).map(async (key) => {

@@ -15,24 +15,26 @@ class Pawn(Piece):
         possible_moves = []
         x = int(square[0])
         y = int(square[1]) + self.move_increment
+        opponent = "Black" if self.isWhite else "White"
+
 
         # Add possible captures
-        if (str(x+1) + str(y) in piece_positions and
-                ("Black" if self.isWhite else "White") in piece_positions[str(x+1) + str(y)].name):
+        print(str(x+1) + str(y) in piece_positions and opponent in (piece_positions[str(x+1) + str(y)].name))
+        if (str(x+1) + str(y) in piece_positions and opponent in (piece_positions[str(x+1) + str(y)].name)):
             possible_moves.append(str(x+1) + str(y))
-        if (str(x-1) + str(y) in piece_positions and
-                ("Black" if self.isWhite else "White") in piece_positions[str(x-1) + str(y)].name):
+        
+        print(str(x-1) + str(y) in piece_positions and opponent in piece_positions[str(x-1) + str(y)].name)
+        if (str(x-1) + str(y) in piece_positions and opponent in piece_positions[str(x-1) + str(y)].name):
             possible_moves.append(str(x-1) + str(y))
         
-        # Add single space advance
+        # Add single space advance or return if blocked
         if (str(x) + str(y) in piece_positions or y < 0 or y > 7):
-            return 
+            return possible_moves
         possible_moves.append(str(x) + str(y))
 
-        # Add double space advance
+        # Add double space advance if available
         if (self.start_row == int(square[1])):
             y += self.move_increment
-            print(y)
             if (str(x) + str(y) in piece_positions or y < 0 or y > 7):
                 return possible_moves
             possible_moves.append(str(square[0]) + str(y))
