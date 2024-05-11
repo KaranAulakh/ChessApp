@@ -15,14 +15,14 @@ class Util:
             "57": King("WhiteKing", True),
             "67": King("WhiteKing", True),
             "77": Rook("WhiteRook", True),
-            "00": Rook("BlackRook", True),
-            "10": King("BlackKing", True),
-            "20": King("BlackKing", True),
-            "30": King("BlackKing", True),
-            "40": King("BlackKing", True),
-            "50": King("BlackKing", True),
-            "60": King("BlackKing", True),
-            "70": Rook("BlackRook", True),
+            "00": Rook("BlackRook", False),
+            "10": King("BlackKing", False),
+            "20": King("BlackKing", False),
+            "30": King("BlackKing", False),
+            "40": King("BlackKing", False),
+            "50": King("BlackKing", False),
+            "60": King("BlackKing", False),
+            "70": Rook("BlackRook", False),
         }
 
         # add white pawns

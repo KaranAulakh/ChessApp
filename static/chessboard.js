@@ -88,7 +88,6 @@ Vue.component('chess-board', {
         },
         
         drawPieces(context) {
-            console.log(this.position)
             for (const key in this.position) {
                 context.drawImage(this.images[this.position[key]], key[0] * 64, key[1] * 64, 64, 64);
             }
@@ -141,7 +140,6 @@ Vue.component('chess-board', {
             try {
                 const response = await fetch(`/get-possible-moves?square=${square}`);
                 this.possibleMoves = await response.json();
-                console.log(this.possibleMoves)
             } catch (error) {
                 console.error('Error fetching piece positions:', error);
             }
