@@ -19,7 +19,7 @@ Vue.component('chess-board', {
     },
     async mounted() {
         await this.loadImages();
-        await this.fetchPiecePositions("start");
+        await this.fetchStartPosition();
 
         // handle events for click and window resize
         this.$refs.canvas.addEventListener('click', this.handleClick);
@@ -37,15 +37,23 @@ Vue.component('chess-board', {
         async handleClick(event) {
             const canvas = this.$refs.canvas;
             const rect = canvas.getBoundingClientRect();
-            const x = Math.floor((event.clientX - rect.left) / 64);
-            const y = Math.floor((event.clientY - rect.top) / 64);
-            const square = this.position[x.toString() + y.toString()];
+            const clickPosition = Math.floor((event.clientX - rect.left) / 64).toString() + 
+                                  Math.floor((event.clientY - rect.top) / 64).toString()
 
-            // If the clicked square has a piece that belongs to the team who's turn it is, then show options
-            if (!!square && square.includes(this.whiteToMove ? "Light" : "Dark")) {
-                await this.fetchPossibleMoves(x.toString() + y.toString());
-                this.selectedSquare = x.toString() + y.toString();
-            } else {
+            // Move piece
+            if(!!this.selectedSquare && this.possibleMoves.includes(clickPosition)) {
+                await this.movePiece(this.selectedSquare, clickPosition);
+                this.whiteToMove = !this.whiteToMove;
+                this.possibleMoves = [];
+                this.selectedSquare = null;
+            }
+            // Select Piece
+            else if (!!this.position[clickPosition] && this.position[clickPosition].includes(this.whiteToMove ? "Light" : "Dark")) {
+                await this.fetchPossibleMoves(clickPosition);
+                this.selectedSquare = clickPosition;
+            } 
+            // Invalid Selection
+            else {
                 this.possibleMoves = [];
                 this.selectedSquare = null;   
             }
@@ -121,12 +129,10 @@ Vue.component('chess-board', {
         /*
          * API METHODS
          */
-        async fetchPiecePositions(move) {
+        async fetchStartPosition() {
             try {
-                const response = await fetch(`/get-piece-positions?move=${move}`);
+                const response = await fetch(`/get-start-position`);
                 this.position = await response.json();
-                // Once positions are fetched, draw the chessboard
-                this.drawChessboard();
             } catch (error) {
                 console.error('Error fetching piece positions:', error);
             }
@@ -135,6 +141,14 @@ Vue.component('chess-board', {
             try {
                 const response = await fetch(`/get-possible-moves?square=${square}`);
                 this.possibleMoves = await response.json();
+            } catch (error) {
+                console.error('Error fetching piece positions:', error);
+            }
+        },
+        async movePiece(pieceToMovePosition, destinationPosition) {
+            try {
+                const response = await fetch(`/move?start=${pieceToMovePosition}&destination=${destinationPosition}`);
+                this.position = await response.json();
             } catch (error) {
                 console.error('Error fetching piece positions:', error);
             }
