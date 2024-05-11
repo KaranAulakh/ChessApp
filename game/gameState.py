@@ -12,7 +12,7 @@ class GameState:
         return self.get_seralized_piece_positions()
     
     def find_moves(self, square):
-        return self.piece_positions[square].calculatePossibleMoves(square)
+        return self.piece_positions[square].calculatePossibleMoves(square, self.piece_positions)
     
     def move(self, start_square, destination_square):
         self.piece_positions[destination_square] = self.piece_positions.pop(start_square)

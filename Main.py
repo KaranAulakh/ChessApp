@@ -28,3 +28,10 @@ def move():
 if __name__ == '__main__':
     #app.run()
     app.run(debug=True)
+
+
+'''
+    Current bugs
+        if there are no possible moves for a piece, you get undefined passed of off null
+        pawns' capture logic is flawed
+'''

@@ -141,6 +141,7 @@ Vue.component('chess-board', {
             try {
                 const response = await fetch(`/get-possible-moves?square=${square}`);
                 this.possibleMoves = await response.json();
+                console.log(this.possibleMoves)
             } catch (error) {
                 console.error('Error fetching piece positions:', error);
             }
