@@ -5,5 +5,5 @@ class Piece:
     def __init__(self, name, isWhite):
         self.name, self.isWhite = name, isWhite
 
-    def calculatePossibleMoves():
+    def calculate_possible_moves():
         NotImplementedError("Subclass Must Implement this Method")

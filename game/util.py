@@ -1,38 +1,29 @@
 from .Pawn import Pawn
+from .Rook import Rook
 from .King import King
 
 class Util:
 
     @staticmethod
-    def get_start_piece_positions():
-        '''
+    def get_start_piece_position():
         positions = {
-            "07": Pawn("WhiteKing", True),
-            "17": Pawn("WhiteKing", True),
-            "27": Pawn("WhiteKing", True),
-            "37": Pawn("WhiteKing", True),
-            "47": Pawn("WhiteKing", True),
-            "57": Pawn("WhiteKing", True),
-            "67": Pawn("WhiteKing", True),
-            "77": Pawn("WhiteKing", True),
-            "00": Pawn("WhiteKing", True),
-            "10": Pawn("WhiteKing", True),
-            "20": Pawn("WhiteKing", True),
-            "30": Pawn("WhiteKing", True),
-            "40": Pawn("WhiteKing", True),
-            "50": Pawn("WhiteKing", True),
-            "60": Pawn("WhiteKing", True),
-            "70": Pawn("WhiteKing", True),
+            "07": Rook("WhiteRook", True),
+            "17": King("WhiteKing", True),
+            "27": King("WhiteKing", True),
+            "37": King("WhiteKing", True),
+            "47": King("WhiteKing", True),
+            "57": King("WhiteKing", True),
+            "67": King("WhiteKing", True),
+            "77": Rook("WhiteRook", True),
+            "00": Rook("BlackRook", True),
+            "10": King("BlackKing", True),
+            "20": King("BlackKing", True),
+            "30": King("BlackKing", True),
+            "40": King("BlackKing", True),
+            "50": King("BlackKing", True),
+            "60": King("BlackKing", True),
+            "70": Rook("BlackRook", True),
         }
-        '''
-        #for testing
-        positions = {}
-        for i in range(8):
-            positions[str(i) + "7"] = King("WhiteKing", True)
-
-        for i in range(8):
-            positions[str(i) + "0"] = King("BlackKing", False)
-
 
         # add white pawns
         for i in range(8):

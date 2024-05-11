@@ -12,7 +12,7 @@ class Pawn(Piece):
         self.move_increment = -1 if isWhite else 1
 
     # Return a an array of strings of xy coordinates of all possible moves
-    def calculatePossibleMoves(self, square, piece_positions):
+    def calculate_possible_moves(self, square, piece_positions):
         possible_moves = []
         x, y = int(square[0]), int(square[1]) + self.move_increment
         opponent = "Black" if self.isWhite else "White"
