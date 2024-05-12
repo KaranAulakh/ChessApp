@@ -33,4 +33,5 @@ if __name__ == '__main__':
 '''
     Current bugs
         if there are no possible moves for a piece, you get undefined passed of off null
+        not falsing is_first_move
 '''

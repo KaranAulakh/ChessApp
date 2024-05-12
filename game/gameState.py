@@ -15,9 +15,15 @@ class GameState:
         return self.piece_positions[square].calculate_possible_moves(square, self.piece_positions)
     
     def move(self, start_square, destination_square):
-        self.piece_positions[destination_square] = self.piece_positions.pop(start_square)
+        if(destination_square == "long" or destination_square == "short"):
+            self.castle(destination_square)
+        else:
+            self.piece_positions[destination_square] = self.piece_positions.pop(start_square)
         return self.get_serialized_piece_positions()
     
+    def castle(self, destinationSquare):
+        print(destinationSquare)
+
     def get_serialized_piece_positions(self):
         seralized_positions = {}
         for position, piece in self.piece_positions.items():
