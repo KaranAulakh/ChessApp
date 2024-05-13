@@ -1,4 +1,4 @@
-from .Piece import Piece
+from game.Piece import Piece
 
 class Pawn(Piece):
     promotion_row = None
@@ -31,6 +31,9 @@ class Pawn(Piece):
                 possible_moves.append(str(square[0]) + str(y))
 
         return possible_moves
+    
+    def handle_special_moves(self, square, piece_positions):
+        return {}
 
 
 
