@@ -15,7 +15,7 @@ class King(Piece):
         # check moves starting up, then spinning clockwise
         possible_squares = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
         for dx, dy in possible_squares:
-            if ((str(x + dx) + str(y + dy) not in piece_positions) or (str(x + dx) + str(y + dy) in piece_positions and opponent in piece_positions[str(x + dx) + str(y + dy)].name)) and (0 <= x + dx <= 7) and (0 <= y + dy <= 7):
+            if self.isValidPieceAtLocation(x + dx, y + dy, piece_positions, opponent, True):
                 possible_moves.append(str(x + dx) + str(y + dy))
 
         return possible_moves

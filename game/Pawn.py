@@ -19,7 +19,7 @@ class Pawn(Piece):
 
         # Check for captures
         for dx in [-1, 1]:
-            if str(x + dx) + str(y) in piece_positions and opponent in piece_positions[str(x + dx) + str(y)].name:
+            if self.isValidPieceAtLocation(x + dx, y, piece_positions, opponent, False):
                 possible_moves.append(str(x + dx) + str(y))
         
         # Add single space advance or return if blocked
