@@ -14,9 +14,9 @@ class King(Piece):
 
         # castling
         if self.can_castle(x, 7, y, piece_positions):
-            possible_moves.append("short")
+            possible_moves.append("shortWhite" if self.isWhite else "shortBlack")
         if self.can_castle(x, 0, y, piece_positions):
-            possible_moves.append("long")
+            possible_moves.append("longWhite" if self.isWhite else "longBlack")
         
         # check moves starting up, then spinning clockwise
         possible_squares = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]

@@ -14,6 +14,8 @@ Vue.component('chess-board', {
             position: {},
             selectedSquare: null,
             possibleMoves: [],
+            specialMovePostion: [],
+            specialMoveType: [],
             whiteToMove: true,
         };
     },
@@ -103,7 +105,11 @@ Vue.component('chess-board', {
             // highlight possible moves
             if (!this.possibleMoves) 
                 return;
-            this.possibleMoves.forEach(square => {   
+            this.possibleMoves.forEach(square => {
+                // if there's a special move, set the values and draw 
+                if(square.length > 2) {
+                    square = this.handleSpecialMove(square)
+                }
                 this.drawCircle(context, 12, 18, square, POSSIBLE_MOVES_HIGHLIGHT_COLOR)
             });
             
@@ -112,7 +118,7 @@ Vue.component('chess-board', {
         drawCircle(context, offset, cornerRadius, square, color){
             const x = parseInt(square[0]) * 64 + offset / 2; 
             const y = parseInt(square[1]) * 64 + offset / 2;
-        
+
             context.fillStyle = color
             context.beginPath();
             context.moveTo(x + cornerRadius, y);
@@ -138,6 +144,8 @@ Vue.component('chess-board', {
         },
         async fetchPossibleMoves(square) {
             try {
+                this.specialMoveType = []
+                this.specialMovePostion = []
                 const response = await fetch(`/get-possible-moves?square=${square}`);
                 this.possibleMoves = await response.json();
             } catch (error) {
@@ -155,7 +163,7 @@ Vue.component('chess-board', {
 
 
         /*
-         * SETUP METHODS
+         * UTILITY METHODS
          */
         async loadImages() {
             const imageSources = {
@@ -180,6 +188,29 @@ Vue.component('chess-board', {
                 this.images[key] = img;
             }));
         },
+
+        handleSpecialMove(square) {
+            this.specialMoveType.push(square)
+            console.log(square)
+            switch (square) {
+                case "shortWhite":
+                    this.specialMovePostion.push("67")
+                    break;
+                case "longWhite":
+                    this.specialMovePostion.push("17")
+                    break;
+                case "shortBlack":
+                    this.specialMovePostion.push("60")
+                    break;
+                case "longBlack":
+                    this.specialMovePostion.push("10")
+                    break;
+                default:
+                    break;
+            }
+            console.log(this.specialMovePostion)
+            return this.specialMovePostion
+        }
     }
 });
 

@@ -12,7 +12,7 @@ class Knight(Piece):
         # Add all squares that are empty or occupied by the opponent
         possible_squares = [(1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
         for dx, dy in possible_squares:
-            if (str(x + dx) + str(y + dy) not in piece_positions) or (str(x + dx) + str(y + dy) in piece_positions and opponent in piece_positions[str(x + dx) + str(y + dy)].name) and (0 <= x + dx <= 7) and (0 <= y + dy <= 7):
+            if ((str(x + dx) + str(y + dy) not in piece_positions) or (str(x + dx) + str(y + dy) in piece_positions and opponent in piece_positions[str(x + dx) + str(y + dy)].name)) and (0 <= x + dx <= 7) and (0 <= y + dy <= 7):
                 possible_moves.append(str(x + dx) + str(y + dy))
 
         return possible_moves
