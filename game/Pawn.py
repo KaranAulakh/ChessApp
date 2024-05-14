@@ -4,6 +4,7 @@ class Pawn(Piece):
     promotion_row = None
     start_row = None
     move_increment = None
+    en_passant_move = None
 
     def __init__(self, isWhite):
         super().__init__("WhitePawn" if isWhite else "BlackPawn", isWhite)
@@ -11,7 +12,8 @@ class Pawn(Piece):
         self.promotion_row = 0 if isWhite else 7
         self.move_increment = -1 if isWhite else 1
 
-    def calculate_possible_moves(self, square, piece_positions):
+    def calculate_possible_moves(self, square, piece_positions, en_passant):
+        print(en_passant)
         possible_moves = []
         x, y = int(square[0]), int(square[1]) + self.move_increment
         opponent = "Black" if self.isWhite else "White"
@@ -19,7 +21,7 @@ class Pawn(Piece):
 
         # Check for captures
         for dx in [-1, 1]:
-            if self.isValidPieceAtLocation(x + dx, y, piece_positions, opponent, False):
+            if self.isValidPieceAtLocation(x + dx, y, piece_positions, opponent, False) or en_passant == str(x + dx) + str(y):
                 possible_moves.append(str(x + dx) + str(y))
         
         # Add single space advance or return if blocked
@@ -28,9 +30,12 @@ class Pawn(Piece):
             # Add double space advance if available
             y += self.move_increment
             if (self.start_row == int(square[1]) and str(x) + str(y) not in piece_positions and 0 <= y <= 7):
-                possible_moves.append(str(square[0]) + str(y))
+                possible_moves.append(str(x) + str(y))
 
         return possible_moves
+    
+    def is_double_step(self, start_row, destination_row):
+        return int(start_row) == self.start_row and int(destination_row) == self.start_row + self.move_increment + self.move_increment
     
     def handle_special_moves(self, square, piece_positions):
         return {}

@@ -12,7 +12,6 @@ class Piece:
             if str(x) + str(y) in piece_positions and typeName in piece_positions[str(x) + str(y)].name:
                 return True
         return False
-
     
     def calculate_possible_moves():
         NotImplementedError("Subclass Must Implement this Method")

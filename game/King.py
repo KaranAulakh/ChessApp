@@ -20,16 +20,23 @@ class King(Piece):
 
         return possible_moves
     
-    # handle castling
-    def handle_special_moves(self, square, piece_positions):
-        possible_moves = {}
+
+    def handle_castling(self, square, piece_positions):
+        possible_castles = {}
         x, y = int(square[0]), int(square[1])
         if self.can_castle(x, 7, y, piece_positions):
-            possible_moves = {"67": "shortWhite"} if self.isWhite else {"60": "shortBlack"}
+            if self.isWhite:
+                possible_castles["67"] = "shortWhite"
+            else:
+                possible_castles["60"] = "shortBlack"
         if self.can_castle(x, 0, y, piece_positions):
-            possible_moves = {"27": "longWhite"} if self.isWhite else {"20": "longBlack"}
+            if self.isWhite:
+                possible_castles["27"] = "longWhite"
+            else: 
+                possible_castles["20"] = "longBlack"
 
-        return possible_moves
+        return possible_castles
+
     
     def can_castle(self, x_king, x_rook, y, piece_positions):
         if not self.isValidPieceAtLocation(x_rook, y, piece_positions, "Rook") \

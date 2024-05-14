@@ -7,8 +7,9 @@ from game.Knight import Knight
 
 class GameState:
     piece_positions = {}
-    special_moves = {}
+    possible_castles = {}
     possible_moves = []
+    en_passant_positions = None
 
     def __init__(self):
         self.piece_positions = self.get_start_piece_position()
@@ -19,36 +20,62 @@ class GameState:
         return self.get_serialized_piece_positions()
 
     def find_moves(self, square):
-        self.possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions)
-        return self.add_special_moves(square)
+        if "Pawn" in self.piece_positions[square].name:
+            en_passant_position = self.en_passant_positions[1] if self.en_passant_positions is not None else None
+            self.possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions, en_passant_position)
+        else:
+            self.possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions)
+        return self.add_castling(square)
     
-    def add_special_moves(self, square):
+    def add_castling(self, square):
         # add any special moves to special moves dictionary
-        if "King" in self.piece_positions[square].name or "Pawn" in self.piece_positions[square].name:
-            self.special_moves = self.piece_positions[square].handle_special_moves(square, self.piece_positions)
+        if "King" in self.piece_positions[square].name:
+            self.possible_castles = self.piece_positions[square].handle_castling(square, self.piece_positions)
         
         # add any special moves to possible moves list
-        if self.special_moves:
-            for key in self.special_moves.keys():
+        if self.possible_castles:
+            for key in self.possible_castles.keys():
                 self.possible_moves.append(key)
 
         return self.possible_moves
 
     def move(self, start_square, destination_square):
-        if (destination_square in self.special_moves):
-            self.execute_special_move(destination_square)
+        # set en-passant location if pawn double stepped but save the location from the previous move
+        previous_double_step = None
+        if self.en_passant_positions is not None:
+            previous_double_step = self.en_passant_positions
+        self.en_passant_positions = self.get_en_passant_location(start_square, destination_square)
+
+        # move piece to destination
         self.piece_positions[destination_square] = self.piece_positions.pop(start_square)
+        
+        # handling castling
+        if (destination_square in self.possible_castles):
+            self.castle(self.possible_castles[destination_square])
+
+        # handling en passant pawn elimination
+        if (previous_double_step is not None and destination_square == previous_double_step[1]):
+            self.piece_positions.pop(previous_double_step[0])
+
         return self.get_serialized_piece_positions()
     
+    
+    def get_en_passant_location(self, start_square, destination_square):
+        if "Pawn" in self.piece_positions[start_square].name and \
+              self.piece_positions[start_square].is_double_step(start_square[1], destination_square[1]):
+                skipped_square = str(start_square[0]) + str(max(int(destination_square[1]), int(start_square[1])) - 1)
+                return [destination_square, skipped_square]
+        return None
 
-    def execute_special_move(self, destination_square):
-        if self.special_moves[destination_square] == "shortWhite":
+
+    def castle(self, castle_type):
+        if castle_type == "shortWhite":
             self.piece_positions["57"] = self.piece_positions.pop("77")
-        elif self.special_moves[destination_square] == "longWhite":
+        elif castle_type == "longWhite":
             self.piece_positions["37"] = self.piece_positions.pop("07")
-        elif self.special_moves[destination_square] == "shortBlack":
+        elif castle_type == "shortBlack":
             self.piece_positions["50"] = self.piece_positions.pop("70")
-        elif self.special_moves[destination_square] == "longBlack":
+        elif castle_type == "longBlack":
             self.piece_positions["30"] = self.piece_positions.pop("00")
 
     def get_serialized_piece_positions(self):
