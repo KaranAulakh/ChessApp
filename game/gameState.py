@@ -9,6 +9,8 @@ class GameState:
     piece_positions = {}
     possible_castles = {}
     possible_moves = []
+    black_king_position = "40"
+    white_king_position = "47"
     en_passant_positions = None
 
     def __init__(self):
@@ -25,6 +27,18 @@ class GameState:
             self.possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions, en_passant_position)
         else:
             self.possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions)
+        
+        # delete moves that place king in check     
+        for end_square in self.possible_moves:
+            if "King" in self.piece_positions[square].name:
+                king_position = end_square
+            else:
+                king_position = self.white_king_position if self.piece_positions[square].isWhite else self.black_king_position
+            test_position = self.perform_move(square, end_square, True)
+            print(king_position)
+            if test_position[king_position].is_in_check(king_position, test_position):
+                self.possible_moves.remove(end_square)
+        
         return self.add_castling(square)
     
     def add_castling(self, square):
@@ -40,14 +54,23 @@ class GameState:
         return self.possible_moves
 
     def move(self, start_square, destination_square):
+        self.piece_positions = self.perform_move(start_square, destination_square, False)
+        return self.get_serialized_piece_positions()
+
+    
+    def perform_move(self, start_square, destination_square, test_move = True):
+        piece_positions = self.piece_positions.copy()
         # set en-passant location if pawn double stepped but save the location from the previous move
         previous_double_step = None
         if self.en_passant_positions is not None:
             previous_double_step = self.en_passant_positions
-        self.en_passant_positions = self.get_en_passant_location(start_square, destination_square)
+
+        # don't reset en_passant value if this is just a test move
+        if not test_move:
+            self.en_passant_positions = self.get_en_passant_location(start_square, destination_square)
 
         # move piece to destination
-        self.piece_positions[destination_square] = self.piece_positions.pop(start_square)
+        piece_positions[destination_square] = piece_positions.pop(start_square)
         
         # handling castling
         if (destination_square in self.possible_castles):
@@ -55,11 +78,20 @@ class GameState:
 
         # handling en passant pawn elimination
         if (previous_double_step is not None and destination_square == previous_double_step[1]):
-            self.piece_positions.pop(previous_double_step[0])
+            piece_positions.pop(previous_double_step[0])
 
-        return self.get_serialized_piece_positions()
-    
-    
+        # keep track of King
+        if start_square == self.black_king_position:
+            self.black_king_position = destination_square
+        elif start_square == self.white_king_position:
+            self.white_king_position = destination_square
+
+        # Are any kings in check 
+        # print(piece_positions[self.white_king_position].is_in_check(self.white_king_position, piece_positions))
+        # print(piece_positions[self.black_king_position].is_in_check(self.black_king_position, piece_positions))
+
+        return piece_positions
+
     def get_en_passant_location(self, start_square, destination_square):
         if "Pawn" in self.piece_positions[start_square].name and \
               self.piece_positions[start_square].is_double_step(start_square[1], destination_square[1]):

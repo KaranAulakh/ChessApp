@@ -5,7 +5,7 @@ class Piece:
     def __init__(self, name, isWhite):
         self.name, self.isWhite = name, isWhite
 
-    def isValidPieceAtLocation(self, x, y, piece_positions, typeName, canBeEmpty=False):
+    def isValidPieceAtLocation(self, x, y, piece_positions, typeName, canBeEmpty = False):
         if (0 <= x <= 7) and (0 <= y <= 7):
             if canBeEmpty and str(x) + str(y) not in piece_positions:
                 return True
