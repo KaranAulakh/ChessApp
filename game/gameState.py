@@ -22,31 +22,37 @@ class GameState:
         return self.get_serialized_piece_positions()
 
     def find_moves(self, square):
+        find_possible_moves = []
         if "Pawn" in self.piece_positions[square].name:
             en_passant_position = self.en_passant_positions[1] if self.en_passant_positions is not None else None
-            self.possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions, en_passant_position)
+            find_possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions, en_passant_position)
         else:
-            self.possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions)
-        
-        # delete moves that place king in check     
-        for end_square in self.possible_moves:
+            find_possible_moves = self.piece_positions[square].calculate_possible_moves(square, self.piece_positions)
+
+        # delete moves that place king in check
+        legal_moves = []
+        king_position = self.white_king_position if self.piece_positions[square].isWhite else self.black_king_position
+        for end_square in find_possible_moves:
+            # Update the king_position if the king is moving
             if "King" in self.piece_positions[square].name:
                 king_position = end_square
-            else:
-                king_position = self.white_king_position if self.piece_positions[square].isWhite else self.black_king_position
+            
+            # perform the move to get the temp position and check if king is in check
             test_position = self.perform_move(square, end_square, True)
-            print(king_position)
-            if test_position[king_position].is_in_check(king_position, test_position):
-                self.possible_moves.remove(end_square)
+            if not test_position[king_position].is_in_check(king_position, test_position):
+                legal_moves.append(end_square)
         
+        # set the possible moves and add castling
+        self.possible_moves = legal_moves 
         return self.add_castling(square)
     
     def add_castling(self, square):
         # add any special moves to special moves dictionary
-        if "King" in self.piece_positions[square].name:
-            self.possible_castles = self.piece_positions[square].handle_castling(square, self.piece_positions)
+        if not "King" in self.piece_positions[square].name:
+            return self.possible_moves
         
         # add any special moves to possible moves list
+        self.possible_castles = self.piece_positions[square].handle_castling(square, self.piece_positions)
         if self.possible_castles:
             for key in self.possible_castles.keys():
                 self.possible_moves.append(key)
@@ -72,23 +78,20 @@ class GameState:
         # move piece to destination
         piece_positions[destination_square] = piece_positions.pop(start_square)
         
-        # handling castling
+        # handle castling
         if (destination_square in self.possible_castles):
-            self.castle(self.possible_castles[destination_square])
+            piece_positions = self.castle(self.possible_castles[destination_square], piece_positions)
 
         # handling en passant pawn elimination
         if (previous_double_step is not None and destination_square == previous_double_step[1]):
             piece_positions.pop(previous_double_step[0])
 
         # keep track of King
-        if start_square == self.black_king_position:
-            self.black_king_position = destination_square
-        elif start_square == self.white_king_position:
-            self.white_king_position = destination_square
-
-        # Are any kings in check 
-        # print(piece_positions[self.white_king_position].is_in_check(self.white_king_position, piece_positions))
-        # print(piece_positions[self.black_king_position].is_in_check(self.black_king_position, piece_positions))
+        if not test_move:
+            if start_square == self.black_king_position:
+                self.black_king_position = destination_square
+            elif start_square == self.white_king_position:
+                self.white_king_position = destination_square
 
         return piece_positions
 
@@ -100,15 +103,17 @@ class GameState:
         return None
 
 
-    def castle(self, castle_type):
+    def castle(self, castle_type, piece_positions):
         if castle_type == "shortWhite":
-            self.piece_positions["57"] = self.piece_positions.pop("77")
+            piece_positions["57"] = piece_positions.pop("77")
         elif castle_type == "longWhite":
-            self.piece_positions["37"] = self.piece_positions.pop("07")
+            piece_positions["37"] = piece_positions.pop("07")
         elif castle_type == "shortBlack":
-            self.piece_positions["50"] = self.piece_positions.pop("70")
+            piece_positions["50"] = piece_positions.pop("70")
         elif castle_type == "longBlack":
-            self.piece_positions["30"] = self.piece_positions.pop("00")
+            piece_positions["30"] = piece_positions.pop("00")
+
+        return piece_positions
 
     def get_serialized_piece_positions(self):
         serialized_positions = {}
