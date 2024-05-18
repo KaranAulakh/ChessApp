@@ -1,13 +1,13 @@
 from game.Piece import Piece
 
 class Queen(Piece):
-    def __init__(self, isWhite):
-        super().__init__("WhiteQueen" if isWhite else "BlackQueen", isWhite)
+    def __init__(self, is_white):
+        super().__init__("WhiteQueen" if is_white else "BlackQueen", is_white)
 
     def calculate_possible_moves(self, square, piece_positions):
         possible_moves = []
         x, y = int(square[0]), int(square[1])
-        opponent = "Black" if self.isWhite else "White"
+        opponent = "Black" if self.is_white else "White"
         
         # check moves starting up, then spinning clockwise
         directions = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]

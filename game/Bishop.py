@@ -1,13 +1,13 @@
 from .Piece import Piece
 
 class Bishop(Piece):
-    def __init__(self, isWhite):
-        super().__init__("WhiteBishop" if isWhite else "BlackBishop", isWhite)
+    def __init__(self, is_white):
+        super().__init__("WhiteBishop" if is_white else "BlackBishop", is_white)
 
     def calculate_possible_moves(self, square, piece_positions):
         possible_moves = []
         x, y = int(square[0]), int(square[1])
-        opponent = "Black" if self.isWhite else "White"
+        opponent = "Black" if self.is_white else "White"
         
         # check moves to the top-right, top-left, bottom-right, bottom-left respectively
         directions = [(1, 1), (-1, 1), (1, -1), (-1, -1)]

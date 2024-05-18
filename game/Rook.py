@@ -3,13 +3,13 @@ from game.Piece import Piece
 class Rook(Piece):
     is_first_move = True
 
-    def __init__(self, isWhite):
-        super().__init__("WhiteRook" if isWhite else "BlackRook", isWhite)
+    def __init__(self, is_white):
+        super().__init__("WhiteRook" if is_white else "BlackRook", is_white)
 
     def calculate_possible_moves(self, square, piece_positions):
         possible_moves = []
         x, y = int(square[0]), int(square[1])
-        opponent = "Black" if self.isWhite else "White"
+        opponent = "Black" if self.is_white else "White"
         
         # check moves to the right, left, up, down respectively 
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
