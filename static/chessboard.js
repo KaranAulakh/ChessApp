@@ -11,6 +11,7 @@ Vue.component('chess-board', {
     data() {
         return {
             images: {},
+            sounds: {},
             piecePositions: {},
             selectedSquare: null,
             possibleMoves: [],
@@ -21,6 +22,7 @@ Vue.component('chess-board', {
     },
     async mounted() {
         await this.loadImages();
+        await this.loadSounds();
         await this.fetchStartPosition();
 
         // handle events for click and window resize
@@ -50,7 +52,7 @@ Vue.component('chess-board', {
                 this.whiteToMove = !this.whiteToMove;
                 this.possibleMoves = [];
                 this.selectedSquare = null;
-                console.log("Play check sound" + this.playCheckSound)
+                this.playCheckSound ? this.sounds["check"].play() : this.sounds["move"].play()
             }
             // Select Piece
             else if (!!this.piecePositions[clickPosition] && this.piecePositions[clickPosition].includes(this.whiteToMove ? "White" : "Black")) {
@@ -200,6 +202,22 @@ Vue.component('chess-board', {
                 this.images[key] = img;
             }));
         },
+        async loadSounds() {
+            const soundSources = {
+                "move": '/static/sounds/moveSound.wav',
+                "check": '/static/sounds/checkSound.wav',
+            };
+        
+            await Promise.all(Object.keys(soundSources).map(async (key) => {
+                const audio = new Audio();
+                audio.src = soundSources[key];
+                await new Promise((resolve, reject) => {
+                    audio.oncanplaythrough = resolve;
+                    audio.onerror = reject;
+                });
+                this.sounds[key] = audio;
+            }));
+        }
     }
 });
 

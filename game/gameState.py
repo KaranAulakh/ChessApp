@@ -86,7 +86,7 @@ class GameState:
         return { 
             "piecePositions":  self.get_serialized_piece_positions(),
             "pawnCanPromote": pawn_can_promote,
-            "kingInCheck": is_king_in_check,
+            "isKingInCheck": is_king_in_check,
             "isGameOver": self.is_game_over(is_king_in_check)
         }
     
