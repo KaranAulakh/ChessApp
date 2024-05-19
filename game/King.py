@@ -90,7 +90,7 @@ class King(Piece):
             if self.is_valid_piece_at_location(x + dx, y + dy, piece_positions, opponent + "Knight", False):
                 return True
             
-        # Check for captures
+        # Check for pawn checks
         for dx in [-1, 1]:
             if self.is_valid_piece_at_location(x + dx, y + self.advance_increment, piece_positions, opponent + "Pawn", False):
                 return True

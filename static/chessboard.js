@@ -11,10 +11,12 @@ Vue.component('chess-board', {
     data() {
         return {
             images: {},
-            position: {},
+            piecePositions: {},
             selectedSquare: null,
             possibleMoves: [],
             whiteToMove: true,
+            pawnCanPromote: null,
+            playCheckSound: false
         };
     },
     async mounted() {
@@ -40,15 +42,18 @@ Vue.component('chess-board', {
             const clickPosition = Math.floor((event.clientX - rect.left) / 64).toString() + 
                                   Math.floor((event.clientY - rect.top) / 64).toString()
 
+            this.pawnCanPromote = null;
+            this.playCheckSound = null;
             // Move piece
             if(!!this.selectedSquare && this.possibleMoves.includes(clickPosition)) {
                 await this.movePiece(this.selectedSquare, clickPosition);
                 this.whiteToMove = !this.whiteToMove;
                 this.possibleMoves = [];
                 this.selectedSquare = null;
+                console.log("Play check sound" + this.playCheckSound)
             }
             // Select Piece
-            else if (!!this.position[clickPosition] && this.position[clickPosition].includes(this.whiteToMove ? "White" : "Black")) {
+            else if (!!this.piecePositions[clickPosition] && this.piecePositions[clickPosition].includes(this.whiteToMove ? "White" : "Black")) {
                 await this.fetchPossibleMoves(clickPosition);
                 this.selectedSquare = clickPosition;
             } 
@@ -58,6 +63,10 @@ Vue.component('chess-board', {
                 this.selectedSquare = null;   
             }
 
+            if (this.pawnCanPromote != null) {
+                promotePawnTo = prompt("Type in Queen, Knight, Bishop, or Rook");
+                await this.promotePawn(this.pawnCanPromote, promotePawnTo);
+            }
             this.drawChessboard()
         },
         handleResize() {
@@ -88,8 +97,8 @@ Vue.component('chess-board', {
         },
         
         drawPieces(context) {
-            for (const key in this.position) {
-                context.drawImage(this.images[this.position[key]], key[0] * 64, key[1] * 64, 64, 64);
+            for (const key in this.piecePositions) {
+                context.drawImage(this.images[this.piecePositions[key]], key[0] * 64, key[1] * 64, 64, 64);
             }
         },
 
@@ -131,7 +140,7 @@ Vue.component('chess-board', {
         async fetchStartPosition() {
             try {
                 const response = await fetch(`/get-start-position`);
-                this.position = await response.json();
+                this.piecePositions = await response.json();
             } catch (error) {
                 console.error('Error fetching piece positions:', error);
             }
@@ -147,7 +156,18 @@ Vue.component('chess-board', {
         async movePiece(pieceToMovePosition, destinationPosition) {
             try {
                 const response = await fetch(`/move?start=${pieceToMovePosition}&destination=${destinationPosition}`);
-                this.position = await response.json();
+                const data = await response.json();
+                this.piecePositions = data.piecePositions;
+                this.pawnCanPromote = data.pawnCanPromote;
+                this.playCheckSound = data.isKingInCheck;
+            } catch (error) {
+                console.error('Error fetching piece positions:', error);
+            }
+        },
+        async promotePawn(pawnLocation, promoteTo) {
+            try {
+                const response = await fetch(`/promote-pawn?pawnLocation=${pawnLocation}&promoteTo=${promoteTo}`);
+                this.piecePositions = await response.json();
             } catch (error) {
                 console.error('Error fetching piece positions:', error);
             }

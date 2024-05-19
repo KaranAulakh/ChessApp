@@ -41,6 +41,5 @@ if __name__ == '__main__':
         validate pawn promotions
         need to implement end game logic, checkmate or draws
         add invalid input safety to methods
-        can't castle through check: look up rules
         handle onRefresh
 '''

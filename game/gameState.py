@@ -80,9 +80,14 @@ class GameState:
         if isinstance(self.piece_positions[destination_square], Pawn) and \
             self.piece_positions[destination_square].can_promote(destination_square):
             pawn_can_promote = destination_square
+
+        is_king_in_check = self.is_king_in_check(self.piece_positions[destination_square].is_white)
+        print(is_king_in_check)
         return { 
             "piecePositions":  self.get_serialized_piece_positions(),
-            "pawnCanPromote": pawn_can_promote
+            "pawnCanPromote": pawn_can_promote,
+            "kingInCheck": is_king_in_check,
+            "isGameOver": self.is_game_over(is_king_in_check)
         }
     
     ''' method to temporarily perform a move and return the position of all pieces after movement
@@ -150,13 +155,23 @@ class GameState:
             self.piece_positions[pawn_location] = Bishop(is_white)
         elif promote_to == "Knight":
             self.piece_positions[pawn_location] = Knight(is_white)
-
-        print(self.get_serialized_piece_positions)
         
         return self.get_serialized_piece_positions
 
     ''' UTILITY METHODS '''
 
+    def is_king_in_check(self, is_white):
+        if is_white:
+            temp = self.piece_positions[self.black_king_position].is_in_check(self.black_king_position, self.piece_positions)
+            return temp
+        else:
+            temp = self.piece_positions[self.white_king_position].is_in_check(self.white_king_position, self.piece_positions)
+            return temp
+
+    def is_game_over(self, king_in_check):
+        # check Draws
+        return None
+    
     ''' Construct an Object for the front end. This is just an object of keys that represent location
         and piece names that consist of Black or White and the piece name '''
     def get_serialized_piece_positions(self):
