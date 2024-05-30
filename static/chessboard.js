@@ -17,7 +17,7 @@ Vue.component('chess-board', {
             possibleMoves: [],
             whiteToMove: true,
             pawnCanPromote: null,
-            playCheckSound: false
+            gameState: null
         };
     },
     async mounted() {
@@ -45,14 +45,14 @@ Vue.component('chess-board', {
                                   Math.floor((event.clientY - rect.top) / 64).toString()
 
             this.pawnCanPromote = null;
-            this.playCheckSound = null;
             // Move piece
             if(!!this.selectedSquare && this.possibleMoves.includes(clickPosition)) {
                 await this.movePiece(this.selectedSquare, clickPosition);
                 this.whiteToMove = !this.whiteToMove;
                 this.possibleMoves = [];
                 this.selectedSquare = null;
-                this.playCheckSound ? this.sounds["check"].play() : this.sounds["move"].play()
+                console.log(this.gameState)
+                this.gameState === null ? this.sounds["move"].play() : this.sounds["check"].play()
             }
             // Select Piece
             else if (!!this.piecePositions[clickPosition] && this.piecePositions[clickPosition].includes(this.whiteToMove ? "White" : "Black")) {
@@ -161,7 +161,7 @@ Vue.component('chess-board', {
                 const data = await response.json();
                 this.piecePositions = data.piecePositions;
                 this.pawnCanPromote = data.pawnCanPromote;
-                this.playCheckSound = data.isKingInCheck;
+                this.gameState = data.gameState;
             } catch (error) {
                 console.error('Error fetching piece positions:', error);
             }
@@ -224,3 +224,4 @@ Vue.component('chess-board', {
 new Vue({
     el: '#app'
 });
+
