@@ -16,9 +16,9 @@ class GameState:
         self.black_king_position = self.INITIAL_BLACK_KING_POSITION
         self.white_king_position = self.INITIAL_WHITE_KING_POSITION
         self.en_passant_positions = None
+        self.board_state_counts = {}
 
-    ''' METHODS TO FIND MOVES '''
-
+    # METHODS TO FIND MOVES #
     ''' Find all legal moves given the location of a piece '''
     def get_legal_moves(self, square):
         all_possible_moves = []
@@ -50,11 +50,9 @@ class GameState:
 
     ''' Add castling moves if the piece to move is the King'''
     def add_castling(self, square):
-        # add any special moves to special moves dictionary
         if not isinstance(self.piece_positions[square], King):
             return self.possible_moves
         
-        # add any special moves to possible moves list
         self.possible_castles = self.piece_positions[square].handle_castling(square, self.piece_positions)
         if self.possible_castles:
             for key in self.possible_castles.keys():
@@ -71,20 +69,24 @@ class GameState:
         return None
 
 
-    ''' METHODS TO HANDLE PIECE MOVEMENT '''
-
+    # METHODS TO HANDLE PIECE MOVEMENT #
     ''' method to move piece in the game '''
     def move(self, start_square, destination_square):
         self.piece_positions = self.perform_move(start_square, destination_square, False)
+
         pawn_can_promote = None
         if isinstance(self.piece_positions[destination_square], Pawn) and \
             self.piece_positions[destination_square].can_promote(destination_square):
             pawn_can_promote = destination_square
 
+        position = self.get_serialized_piece_positions()
+        self.update_board_state_count(position)
+        game_state = self.get_game_state(self.piece_positions[destination_square].is_white, position)
+
         return { 
             "piecePositions":  self.get_serialized_piece_positions(),
             "pawnCanPromote": pawn_can_promote,
-            "gameState": self.get_game_state(self.piece_positions[destination_square].is_white)
+            "gameState": game_state
         }
     
     ''' method to temporarily perform a move and return the position of all pieces after movement
@@ -92,7 +94,7 @@ class GameState:
     def perform_move(self, start_square, destination_square, test_move = True):
         piece_positions = self.piece_positions.copy()
 
-        # set en-passant location if pawn double stepped but save the location from the previous move
+        # set prevous double step to find possible en passants
         previous_double_step = None
         if self.en_passant_positions is not None:
             previous_double_step = self.en_passant_positions
@@ -143,30 +145,75 @@ class GameState:
         return piece_positions
     
     def promote_pawn(self, pawn_location, promote_to):
-        is_white = self.piece_positions[pawn_location].is_white
-        if promote_to == "Queen":
-            self.piece_positions[pawn_location] = Queen(is_white)
-        elif promote_to == "Rook":
-            self.piece_positions[pawn_location] = Rook(is_white)
-        elif promote_to == "Bishop":
-            self.piece_positions[pawn_location] = Bishop(is_white)
-        elif promote_to == "Knight":
-            self.piece_positions[pawn_location] = Knight(is_white)
-        
+        piece_map = {
+            "Queen": Queen,
+            "Rook": Rook,
+            "Bishop": Bishop,
+            "Knight": Knight
+        }
+        if promote_to in piece_map:
+            self.piece_positions[pawn_location] = piece_map[promote_to](self.piece_positions[pawn_location].is_white)
         return self.get_serialized_piece_positions()
 
-    ''' UTILITY METHODS '''
+    # GAME STATE METHODS #
+    ''' return the state of the game '''
+    def get_game_state(self, is_white, position):
+        if not self.has_legal_moves(is_white):
+            if self.is_king_in_check(is_white):
+                return "checkmate"
+            else:
+                return "stalemate"
+        if self.is_draw_by_insufficient_material():
+            return "insufficient material"
+        if self.check_threefold_repetition(position):
+            return "three-fold repetition"
+        if self.is_king_in_check(is_white):
+            return "check"
+
+        return None
     
-    ''' Construct an Object for the front end. This is just an object of keys that represent location
-        and piece names that consist of Black or White and the piece name '''
+    def is_draw_by_insufficient_material(self):
+        if len(self.piece_positions) > 4:
+            return False
+        # if there is one bishop and one king per side it is a draw, any other combination of four pieces is not
+        elif len(self.piece_positions) == 4:
+            num_of_white_bishops = 0
+            num_of_black_bishops = 0
+            for piece in self.piece_positions.values():
+                if isinstance(piece, Bishop):
+                    if piece.is_white:
+                        num_of_white_bishops += 1
+                    else:
+                        num_of_black_bishops += 1
+            if num_of_black_bishops == 1 and num_of_black_bishops == 1:
+                return True
+        # if there are only 3 pieces all of which are a king, bishop or knight, it is a draw
+        elif all(isinstance(piece, (King, Bishop, Knight)) for piece in self.piece_positions.values()):
+            return True
+
+        return False
+    
+    def update_board_state_count(self, position):
+        state = tuple(position)
+        if state in self.board_state_counts:
+            self.board_state_counts[state] += 1
+        else:
+            self.board_state_counts[state] = 1
+
+    def check_threefold_repetition(self, position):
+        state = tuple(position)
+        return self.board_state_counts.get(state, 0) >= 3
+    
+    
+    # UTILITY METHODS #
+    ''' Construct an Object for with piece position as keys and piece name as values for client uptake '''
     def get_serialized_piece_positions(self):
         serialized_positions = {}
-        for position, piece in self.piece_positions.items():
+        for position, piece in sorted(self.piece_positions.items()):
             serialized_positions[position] = piece.name
 
         return serialized_positions
         
-    
     ''' Set/Reset the board to the starting position '''
     def get_start_position(self):
         self.piece_positions = self.get_start_piece_position()
@@ -205,14 +252,12 @@ class GameState:
         
         return positions
     
+    ''' return if the given king is in check'''
     def is_king_in_check(self, is_white):
-        if is_white:
-            temp = self.piece_positions[self.black_king_position].is_in_check(self.black_king_position, self.piece_positions)
-            return temp
-        else:
-            temp = self.piece_positions[self.white_king_position].is_in_check(self.white_king_position, self.piece_positions)
-            return temp
+        king = self.black_king_position if is_white else self.white_king_position
+        return self.piece_positions[king].is_in_check(king, self.piece_positions)
     
+    ''' calculate the given side has any legal moves'''
     def has_legal_moves(self, is_white):
         for piece in self.piece_positions:
             if self.piece_positions[piece].is_white is not is_white and self.get_legal_moves(piece):
@@ -220,14 +265,5 @@ class GameState:
                 
         return False
     
-    def get_game_state(self, is_white):
-        if not self.has_legal_moves(is_white):
-            if self.is_king_in_check(is_white):
-                return "checkmate"
-            else:
-                return "stalemate"
-        if self.is_king_in_check(is_white):
-            return "check"
-
-        return None
-    
+    def is_piece_type(self, square, piece_type):
+        return isinstance(self.piece_positions.get(square), piece_type)

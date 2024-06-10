@@ -15,3 +15,4 @@ class Piece:
     
     def calculate_possible_moves():
         NotImplementedError("Subclass Must Implement this Method")
+

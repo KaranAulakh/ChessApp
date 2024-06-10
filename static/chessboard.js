@@ -3,6 +3,7 @@ const LIGHT_SQUARE_COLOR = "#DFD0B8"
 const POSSIBLE_MOVES_HIGHLIGHT_COLOR = "rgba(21, 52, 72, 0.15)"
 const LIGHT_SQUARE_HIGHLIGHT_COLOR = "#E6E6FA"
 const DARK_SQUARE_HIGHLIGHT_COLOR = "#A7D4CD"
+const GAME_OVER = ["stalemate", "checkmate"]
 
 
 Vue.component('chess-board', {
@@ -217,7 +218,7 @@ Vue.component('chess-board', {
                 });
                 this.sounds[key] = audio;
             }));
-        }
+        },
     }
 });
 
