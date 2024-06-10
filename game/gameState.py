@@ -264,6 +264,3 @@ class GameState:
                 return True
                 
         return False
-    
-    def is_piece_type(self, square, piece_type):
-        return isinstance(self.piece_positions.get(square), piece_type)
