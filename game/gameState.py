@@ -18,7 +18,7 @@ class GameState:
         self.en_passant_positions = None
         self.board_state_counts = {}
 
-    # METHODS FOR MOVE CALCULATION #
+    # METHODS TO FIND MOVES #
     ''' Find all legal moves given the location of a piece '''
     def get_legal_moves(self, square):
         all_possible_moves = []
