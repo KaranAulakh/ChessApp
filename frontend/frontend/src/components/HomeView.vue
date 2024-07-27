@@ -1,30 +1,28 @@
 <template>
   <div>
-    <p>{{ board }}</p>
+    <p>{{ msg }}</p>
   </div>
 </template>
 
 <script>
-import { getFromFlask } from "@/services/apiService";
+import { getFromFlask } from "@/utils/apiService";
 
 export default {
   name: "homeView",
   data() {
     return {
-      board: "",
+      msg: "",
     };
   },
   methods: {
-    getResponse() {
-      const path = "/play";
-      getFromFlask(path)
-        .then((res) => {
-          console.log(res.data);
-          this.board = res.data;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+    async getResponse() {
+      const path = "/";
+      const res = await getFromFlask(path);
+      if (res.success) {
+        this.msg = res.data;
+      } else {
+        this.msg = res.errorMsg;
+      }
     },
   },
   created() {
