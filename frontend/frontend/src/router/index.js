@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/components/HomeView.vue";
-import Chessboard from "@/components/Chessboard.vue";
+import PlayChess from "@/components/PlayChess.vue";
 
 const routes = [
   {
@@ -10,8 +10,8 @@ const routes = [
   },
   {
     path: "/play",
-    name: "chessBoard",
-    component: Chessboard,
+    name: "playChess",
+    component: PlayChess,
   },
 ];
 

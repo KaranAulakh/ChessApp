@@ -1,34 +1,44 @@
 <template>
-  <div>
-    <p>{{ board }}</p>
+  <div class="chessboard">
+    <div v-for="row in 8" :key="row" class="row">
+      <div
+        v-for="col in 8"
+        :key="col"
+        :class="['cell', getColor(row, col)]"
+      ></div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 export default {
-  name: "homeView",
-  data() {
-    return {
-      board: "",
-    };
-  },
+  name: "ChessBoard",
   methods: {
-    getResponse() {
-      const path = "http::localhost:5000/play";
-      axios
-        .get(path)
-        .then((res) => {
-          console.log(res.data);
-          this.board = res.data;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+    getColor(row, col) {
+      return (row + col) % 2 === 0 ? "white" : "black";
     },
-  },
-  created() {
-    this.getResponse();
   },
 };
 </script>
+
+<style scoped>
+.chessboard {
+  display: grid;
+  grid-template-rows: repeat(8, 50px);
+  grid-template-columns: repeat(8, 50px);
+  border: 2px solid #000;
+}
+.row {
+  display: contents;
+}
+.cell {
+  width: 50px;
+  height: 50px;
+}
+.cell.white {
+  background-color: #fff;
+}
+.cell.black {
+  background-color: #000;
+}
+</style>

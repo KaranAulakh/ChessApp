@@ -10,7 +10,11 @@ CORS(app, resources={r"/*":{'origins': '*'}})
 # test
 @app.route('/', methods=['GET'])
 def test():
-  return ("Hello")
+  return ("Home page incoming")
+
+@app.route('/play', methods=['GET'])
+def play():
+  return ("Let's play chess")
 
 if __name__ == "__main__":
   app.run(debug=True)
