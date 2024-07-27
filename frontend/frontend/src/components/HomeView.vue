@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { getFromFlask } from "@/services/apiService";
 
 export default {
   name: "homeView",
@@ -16,9 +16,8 @@ export default {
   },
   methods: {
     getResponse() {
-      const path = "http://localhost:5000";
-      axios
-        .get(path)
+      const path = "/play";
+      getFromFlask(path)
         .then((res) => {
           console.log(res.data);
           this.board = res.data;
