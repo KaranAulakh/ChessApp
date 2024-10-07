@@ -15,40 +15,41 @@ export default {
 </script>
 
 <style scoped>
-/* Sidebar styling */
 .sidebar {
-  width: 210px; /* Fixed width */
-  background-color: #908f8f; /* Grey background (inverse of main content) */
-  color: #2c3e50; /* Blue font color (inverse of main content) */
-  min-height: 100vh; /* Ensure the sidebar takes the full height of the viewport */
-  margin: 0; /* Remove any default margins */
+  width: 210px;
+  background-color: #908f8f;
+  color: #2c3e50;
+  min-height: 100vh;
+  margin: 0;
 }
 
 /* Sidebar heading and link styles */
 .sidebar h1,
 .sidebar ul,
 .sidebar li {
-  color: #2c3e50; /* Sidebar font color */
+  color: #2c3e50;
   text-align: center;
 }
 
 .sidebar ul {
-  list-style-type: none; /* Remove bullet points from the list */
-  padding: 0; /* Remove default padding */
+  list-style-type: none;
+  padding: 0;
 }
 
 .sidebar li {
-  margin-bottom: 10px; /* Add space between the links */
+  margin-bottom: 10px;
 }
 
 .sidebar a {
-  color: #2c3e50; /* Ensure links use the sidebar's font color */
-  text-decoration: none; /* Remove underline from links */
+  color: #2c3e50;
+  width: 100%;
+  text-decoration: none; /* to remove the underline */
+  padding: 10px;
 }
 
 .sidebar a:hover {
   background-color: #b0afaf;
-  padding: 5px;
   border-radius: 10px;
+  width: 100%;
 }
 </style>
