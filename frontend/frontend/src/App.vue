@@ -1,9 +1,7 @@
 <template>
   <div class="flex">
     <SideBar />
-    <div class="flex-1 flex justify-center">
-      <router-view />
-    </div>
+    <router-view class="app-container" />
   </div>
 </template>
 

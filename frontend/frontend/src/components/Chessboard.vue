@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvas" width="512" height="512"></canvas>
+  <div ref="chessboard" class="chessboard"></div>
 </template>
 
 <script>
@@ -23,13 +23,12 @@ export default {
     await this.loadImages();
     await this.fetchPiecePositions("start");
 
-    // handle events for click and window resize
-    this.$refs.canvas.addEventListener("click", this.handleClick);
+    // Initialize the chessboard grid
+    this.createChessboard();
+
     window.addEventListener("resize", this.handleResize);
-    this.drawChessboard();
   },
   beforeUnmount() {
-    this.$refs.canvas.removeEventListener("click", this.handleClick);
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
@@ -37,109 +36,92 @@ export default {
      * EVENT HANDLING METHODS
      */
     async handleClick(event) {
-      const canvas = this.$refs.canvas;
-      const rect = canvas.getBoundingClientRect();
-      const x = Math.floor((event.clientX - rect.left) / 64);
-      const y = Math.floor((event.clientY - rect.top) / 64);
-      const square = this.position[x.toString() + y.toString()];
+      const squareElement = event.target;
+      const x = squareElement.dataset.x;
+      const y = squareElement.dataset.y;
+      const square = this.position[x + y];
 
       // If the clicked square has a piece that belongs to the team who's turn it is, then show options
       if (!!square && square.includes(this.whiteToMove ? "White" : "Black")) {
-        await this.fetchPossibleMoves(x.toString() + y.toString());
-        this.selectedSquare = x.toString() + y.toString();
+        await this.fetchPossibleMoves(x + y);
+        this.selectedSquare = x + y;
       } else {
         this.possibleMoves = [];
         this.selectedSquare = null;
       }
 
-      this.drawChessboard();
+      this.updateChessboard();
     },
+
     handleResize() {
-      // Redraw the chessboard, will probably need to send in new dimensions
-      this.drawChessboard();
+      // Re-render the chessboard in case of resize
+      this.updateChessboard();
     },
+
     /*
      * GRAPHIC RENDERING METHODS
      */
-    drawChessboard() {
-      const canvas = this.$refs.canvas;
-      const context = canvas.getContext("2d");
+    createChessboard() {
+      const chessboard = this.$refs.chessboard;
+      chessboard.innerHTML = "";
+      chessboard.style.display = "grid";
+      chessboard.style.gridTemplateColumns = "repeat(8, 64px)";
+      chessboard.style.gridTemplateRows = "repeat(8, 64px)";
 
-      // draw chess board
       let light = true;
       for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
-          const color = light ? WHITE_SQUARE_COLOR : BLACK_SQUARE_COLOR;
-          context.fillStyle = color;
-          context.fillRect(x * 64, y * 64, 64, 64);
+          const square = document.createElement("div");
+          square.dataset.x = x;
+          square.dataset.y = y;
+          square.classList.add("chess-square");
+          square.style.backgroundColor = light
+            ? WHITE_SQUARE_COLOR
+            : BLACK_SQUARE_COLOR;
+          square.style.width = "64px";
+          square.style.height = "64px";
+          square.addEventListener("click", this.handleClick);
+          chessboard.appendChild(square);
           light = !light;
         }
         light = !light;
       }
-
-      this.highlightSquares(context);
-      this.drawPieces(context);
+      this.updateChessboard();
     },
 
-    drawPieces(context) {
-      for (const key in this.position) {
-        context.drawImage(
-          this.images[this.position[key]],
-          key[0] * 64,
-          key[1] * 64,
-          64,
-          64
-        );
+    updateChessboard() {
+      const chessboard = this.$refs.chessboard;
+      for (let x = 0; x < 8; x++) {
+        for (let y = 0; y < 8; y++) {
+          const square = chessboard.children[x * 8 + y];
+          const piece = this.position[x.toString() + y.toString()];
+
+          square.innerHTML = ""; // Clear previous pieces
+          if (piece) {
+            const pieceImg = document.createElement("img");
+            pieceImg.src = this.images[piece].src;
+            pieceImg.style.width = "100%";
+            pieceImg.style.height = "100%";
+            square.appendChild(pieceImg);
+          }
+
+          // Apply highlights
+          if (this.selectedSquare === x.toString() + y.toString()) {
+            square.style.backgroundColor =
+              x % 2 === y % 2
+                ? WHITE_SQUARE_HIGHLIGHT_COLOR
+                : BLACK_SQUARE_HIGHLIGHT_COLOR;
+          } else if (
+            this.possibleMoves &&
+            this.possibleMoves.includes(x.toString() + y.toString())
+          ) {
+            square.style.backgroundColor = POSSIBLE_MOVES_HIGHLIGHT_COLOR;
+          } else {
+            square.style.backgroundColor =
+              x % 2 === y % 2 ? WHITE_SQUARE_COLOR : BLACK_SQUARE_COLOR;
+          }
+        }
       }
-    },
-
-    highlightSquares(context) {
-      // highlight selected square
-      if (!this.selectedSquare) return;
-      const color =
-        this.selectedSquare[0] % 2 == this.selectedSquare[1] % 2
-          ? WHITE_SQUARE_HIGHLIGHT_COLOR
-          : BLACK_SQUARE_HIGHLIGHT_COLOR;
-      this.drawCircle(context, 0, 0, this.selectedSquare, color);
-
-      // highlight possible moves
-      if (!this.possibleMoves) return;
-      this.possibleMoves.forEach((square) => {
-        this.drawCircle(
-          context,
-          12,
-          18,
-          square,
-          POSSIBLE_MOVES_HIGHLIGHT_COLOR
-        );
-      });
-    },
-
-    drawCircle(context, offset, cornerRadius, square, color) {
-      const x = parseInt(square[0]) * 64 + offset / 2;
-      const y = parseInt(square[1]) * 64 + offset / 2;
-
-      context.fillStyle = color;
-      context.beginPath();
-      context.moveTo(x + cornerRadius, y);
-      context.arcTo(
-        x + 64 - offset,
-        y,
-        x + 64 - offset,
-        y + cornerRadius,
-        cornerRadius
-      );
-      context.arcTo(
-        x + 64 - offset,
-        y + 64 - offset,
-        x + 64 - cornerRadius,
-        y + 64 - offset,
-        cornerRadius
-      );
-      context.arcTo(x, y + 64 - offset, x, y + 64 - cornerRadius, cornerRadius);
-      context.arcTo(x, y, x + cornerRadius, y, cornerRadius);
-      context.closePath();
-      context.fill();
     },
 
     /*
@@ -173,3 +155,18 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.chessboard {
+  display: grid;
+  grid-template-columns: repeat(8, 64px);
+  grid-template-rows: repeat(8, 64px);
+}
+
+.chess-square {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

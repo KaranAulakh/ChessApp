@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
-    <p>Welcome to Chess</p>
+    <h1>Welcome to Chess</h1>
     <ChessBoard />
   </div>
 </template>
 
 <script>
-import ChessBoard from "./Chessboard.vue";
+import ChessBoard from "./ChessBoard.vue";
 
 export default {
   name: "PlayChess",
