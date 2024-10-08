@@ -28,21 +28,21 @@ export default {
 <style scoped>
 .sidebar {
   width: 150px;
-  background-color: #908f8f;
-  color: #2c3e50;
+  background-color: #22313f;
+  color: #908f8f;
   min-height: 100vh;
   margin: 0;
 }
 
 /* Sidebar heading and link styles */
 .sidebar h1 {
-  color: #2c3e50;
+  color: #908f8f;
   text-align: center;
 }
 
 .sidebar ul,
 .sidebar li {
-  color: #2c3e50;
+  color: #908f8f;
   text-align: left;
   padding-bottom: 10px;
   padding-top: 10px;
@@ -55,12 +55,12 @@ export default {
 }
 
 .sidebar li:hover {
-  background-color: #b0afaf;
+  background-color: #2c3e50;
   width: 100%;
 }
 
 .sidebar a {
-  color: #2c3e50;
+  color: #908f8f;
   width: 100%;
   text-decoration: none; /* to remove the underline */
   padding: 10px;

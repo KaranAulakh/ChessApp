@@ -29,3 +29,7 @@ p, h1 {
   color: #908f8f; 
   text-align: center;
 }
+
+svg {
+  stroke: #908f8f; 
+}
