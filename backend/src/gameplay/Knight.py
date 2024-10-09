@@ -1,4 +1,4 @@
-from game.Piece import Piece
+from gameplay.Piece import Piece
 
 class Knight(Piece):
     def __init__(self, is_white):

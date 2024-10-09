@@ -1,4 +1,4 @@
-from game.Piece import Piece
+from gameplay.Piece import Piece
 
 class King(Piece):
     # will be used to determine if king can castle

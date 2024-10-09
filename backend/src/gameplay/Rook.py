@@ -1,4 +1,4 @@
-from game.Piece import Piece
+from gameplay.Piece import Piece
 
 class Rook(Piece):
     is_first_move = True

@@ -1,9 +1,9 @@
-from Pawn import Pawn
-from Rook import Rook
-from King import King
-from Bishop import Bishop
-from Queen import Queen
-from Knight import Knight
+from gameplay.Pawn import Pawn
+from gameplay.Rook import Rook
+from gameplay.King import King
+from gameplay.Bishop import Bishop
+from gameplay.Queen import Queen
+from gameplay.Knight import Knight
 
 class GameState:
     INITIAL_BLACK_KING_POSITION = "40"

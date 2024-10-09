@@ -1,4 +1,4 @@
-from game.Piece import Piece
+from gameplay.Piece import Piece
 
 class Pawn(Piece):
     promotion_row = None
