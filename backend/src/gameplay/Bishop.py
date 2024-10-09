@@ -1,4 +1,4 @@
-from .Piece import Piece
+from gameplay.Piece import Piece
 
 class Bishop(Piece):
     def __init__(self, is_white):

@@ -4,7 +4,7 @@ from gameplay.gameState import GameState
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-gameState = GameState
+gameState = GameState()
 
 CORS(app, resources={r"/*":{'origins': '*'}})
 # maybe define to localhost 8080 with allow_header: access-control-allow-origin

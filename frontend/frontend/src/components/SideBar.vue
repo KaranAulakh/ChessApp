@@ -64,7 +64,7 @@ export default {
   a {
     color: #908f8f;
     width: 100%;
-    text-decoration: none; /* to remove the underline */
+    text-decoration: none;
     padding: 10px;
     flex-grow: 1;
   }

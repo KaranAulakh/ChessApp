@@ -22,8 +22,8 @@ export const gameLogic = {
       try {
         const response =
           move === "start"
-            ? await fetch(`/get-start-positions`)
-            : await fetch(`/get-piece-positions?move=${move}`);
+            ? await this.getResponse("/get-start-positions")
+            : await this.getResponse(`/get-piece-positions?move=${move}`);
         this.position = await response.json();
       } catch (error) {
         console.error("Error fetching piece positions:", error);
