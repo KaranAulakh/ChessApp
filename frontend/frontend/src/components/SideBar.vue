@@ -40,6 +40,7 @@ export default {
 <style scoped>
 .sidebar {
   width: 150px;
+  border-right: 1px solid #908f8f;
   background-color: #22313f;
   color: #908f8f;
   min-height: 100vh;
