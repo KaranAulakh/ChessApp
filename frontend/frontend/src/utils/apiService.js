@@ -7,7 +7,7 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Intercept the response to handle errors
+// Intercept the response to handle errors and API formatting
 api.interceptors.response.use(
   (response) => {
     return {
@@ -17,12 +17,6 @@ api.interceptors.response.use(
     };
   },
   (error) => {
-    /* todo: send errors
-    let errorMsg = "An error occurred";
-    if (error.response && error.response.data && error.response.data.message) {
-      errorMsg = error.response.data.message;
-    }
-      */
     return {
       success: false,
       data: {},
@@ -31,9 +25,9 @@ api.interceptors.response.use(
   }
 );
 
-// Get calls
-const getFromFlask = (path) => {
+// Handle Get Calls from the api
+const apiServiceGET = (path) => {
   return api.get(path);
 };
 
-export { getFromFlask };
+export { apiServiceGET };
