@@ -22,8 +22,6 @@ export default {
   async mounted() {
     await this.loadImages();
     await this.fetchPiecePositions("start");
-
-    // Initialize the chessboard grid
     this.createChessboard();
 
     window.addEventListener("resize", this.handleResize);
@@ -61,6 +59,7 @@ export default {
     /*
      * GRAPHIC RENDERING METHODS
      */
+    // This Method Creates an 8 by 8 grid using divs for each and a preset pixel size for now
     createChessboard() {
       const chessboard = this.$refs.chessboard;
       chessboard.innerHTML = "";
@@ -69,8 +68,8 @@ export default {
       chessboard.style.gridTemplateRows = "repeat(8, 64px)";
 
       let light = true;
-      for (let x = 0; x < 8; x++) {
-        for (let y = 0; y < 8; y++) {
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
           const square = document.createElement("div");
           square.dataset.x = x;
           square.dataset.y = y;

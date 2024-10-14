@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { getFromFlask } from "@/utils/apiService";
+import { apiServiceGET } from "@/utils/apiService";
 
 export default {
   name: "homeView",
@@ -17,7 +17,7 @@ export default {
   methods: {
     async getResponse() {
       const path = "/";
-      const res = await getFromFlask(path);
+      const res = await apiServiceGET(path);
       if (res.success) {
         this.msg = res.data;
       } else {
