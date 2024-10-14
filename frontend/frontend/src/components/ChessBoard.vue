@@ -90,9 +90,10 @@ export default {
 
     updateChessboard() {
       const chessboard = this.$refs.chessboard;
-      for (let x = 0; x < 8; x++) {
-        for (let y = 0; y < 8; y++) {
-          const square = chessboard.children[x * 8 + y];
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+          // The dom returns a 1 dimensional grid, so we need to multiply by 8 to get to the right row
+          const square = chessboard.children[y * 8 + x];
           const piece = this.position[x.toString() + y.toString()];
 
           square.innerHTML = ""; // Clear previous pieces
