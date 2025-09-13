@@ -23,4 +23,4 @@ def get_start_position():
     return jsonify(gameState.get_start_position())
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(debug=True, port=5001)
