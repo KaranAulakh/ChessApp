@@ -1,15 +1,16 @@
+from typing import Dict, List
 from gameplay.Piece import Piece
 
 class King(Piece):
     # will be used to determine if king can castle
-    is_first_move = True
-    advance_increment = None
+    is_first_move: bool = True
+    advance_increment: int
 
-    def __init__(self, is_white):
+    def __init__(self, is_white: bool) -> None:
         super().__init__("WhiteKing" if is_white else "BlackKing", is_white)
         self.advance_increment = -1 if is_white else 1
 
-    def calculate_possible_moves(self, square, piece_positions):
+    def calculate_possible_moves(self, square: str, piece_positions: Dict[str, Piece]) -> List[str]:
         possible_moves = []
         x, y = int(square[0]), int(square[1])
         opponent = "Black" if self.is_white else "White"
@@ -23,7 +24,7 @@ class King(Piece):
         return possible_moves
     
 
-    def handle_castling(self, square, piece_positions):
+    def handle_castling(self, square: str, piece_positions: Dict[str, Piece]) -> Dict[str, str]:
         possible_castles = {}
         if not self.is_first_move:
             return possible_castles
@@ -43,7 +44,7 @@ class King(Piece):
         return possible_castles
 
     
-    def can_castle(self, x_king, x_rook, y, piece_positions):
+    def can_castle(self, x_king: int, x_rook: int, y: int, piece_positions: Dict[str, Piece]) -> bool:
         if not self.is_valid_piece_at_location(x_rook, y, piece_positions, "Rook") \
            or not piece_positions[str(x_rook) + str(y)].is_first_move:
             return False
@@ -54,7 +55,7 @@ class King(Piece):
                 return False
         return True
     
-    def is_in_check(self, square, piece_positions):
+    def is_in_check(self, square: str, piece_positions: Dict[str, Piece]) -> bool:
         x, y = int(square[0]), int(square[1])
         opponent = "Black" if self.is_white else "White"
 

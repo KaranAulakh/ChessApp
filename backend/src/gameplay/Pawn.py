@@ -1,18 +1,19 @@
+from typing import Dict, List, Optional
 from gameplay.Piece import Piece
 
 class Pawn(Piece):
-    promotion_row = None
-    start_row = None
-    advance_increment = None
-    en_passant_move = None
+    promotion_row: int
+    start_row: int
+    advance_increment: int
+    en_passant_move: Optional[str] = None
 
-    def __init__(self, is_white):
+    def __init__(self, is_white: bool) -> None:
         super().__init__("WhitePawn" if is_white else "BlackPawn", is_white)
         self.start_row = 6 if is_white else 1
         self.promotion_row = 0 if is_white else 7
         self.advance_increment = -1 if is_white else 1
 
-    def calculate_possible_moves(self, square, piece_positions, en_passant):
+    def calculate_possible_moves(self, square: str, piece_positions: Dict[str, Piece], en_passant: Optional[str]) -> List[str]:
         possible_moves = []
         x, y = int(square[0]), int(square[1]) + self.advance_increment
         opponent = "Black" if self.is_white else "White"
@@ -33,9 +34,9 @@ class Pawn(Piece):
 
         return possible_moves
     
-    def is_double_step(self, start_row, destination_row):
-        return int(start_row) == self.start_row and int(destination_row) == self.start_row + self.advance_increment + self.advance_increment\
+    def is_double_step(self, start_row: str, destination_row: str) -> bool:
+        return int(start_row) == self.start_row and int(destination_row) == self.start_row + self.advance_increment + self.advance_increment
         
-    def can_promote(self, square):
+    def can_promote(self, square: str) -> bool:
         return self.promotion_row == int(square[1])
     

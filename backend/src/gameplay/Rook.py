@@ -1,12 +1,13 @@
+from typing import Dict, List
 from gameplay.Piece import Piece
 
 class Rook(Piece):
-    is_first_move = True
+    is_first_move: bool = True
 
-    def __init__(self, is_white):
+    def __init__(self, is_white: bool) -> None:
         super().__init__("WhiteRook" if is_white else "BlackRook", is_white)
 
-    def calculate_possible_moves(self, square, piece_positions):
+    def calculate_possible_moves(self, square: str, piece_positions: Dict[str, Piece]) -> List[str]:
         possible_moves = []
         x, y = int(square[0]), int(square[1])
         opponent = "Black" if self.is_white else "White"
