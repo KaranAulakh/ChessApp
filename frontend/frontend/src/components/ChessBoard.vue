@@ -1,15 +1,23 @@
 <template>
-  <div ref="chessboard" class="chessboard"></div>
+  <div class="chessboard">
+    <div
+      v-for="square in boardSquares"
+      :key="square.id"
+      :class="getSquareClasses(square)"
+      @click="handleSquareClick(square)"
+    >
+      <img
+        v-if="square.piece"
+        :src="images[square.piece]?.src"
+        class="piece-image"
+        :alt="square.piece"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
 import { gameLogic } from "@/utils/gameLogic.js";
-
-const BLACK_SQUARE_COLOR = "#948979";
-const WHITE_SQUARE_COLOR = "#DFD0B8";
-const POSSIBLE_MOVES_HIGHLIGHT_COLOR = "rgba(21, 52, 72, 0.15)";
-const WHITE_SQUARE_HIGHLIGHT_COLOR = "#E6E6FA";
-const BLACK_SQUARE_HIGHLIGHT_COLOR = "#A7D4CD";
 
 export default {
   name: "ChessBoard",
@@ -19,30 +27,61 @@ export default {
       images: {},
     };
   },
+  computed: {
+    // Reactive computed property that automatically updates when position changes
+    boardSquares() {
+      const squares = [];
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+          const id = `${x}${y}`;
+          squares.push({
+            id,
+            x,
+            y,
+            piece: this.position[id] || null,
+            isLight: (x + y) % 2 === 0,
+          });
+        }
+      }
+      return squares;
+    },
+  },
   async mounted() {
     await this.loadImages();
     await this.fetchPiecePositions("start");
-    this.createChessboard();
-
     window.addEventListener("resize", this.handleResize);
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
-    /*
-     * EVENT HANDLING METHODS
-     */
-    async handleClick(event) {
-      // If clicking on a piece image, get the parent square element
-      let squareElement = event.target;
-      if (squareElement.tagName === "IMG") {
-        squareElement = squareElement.parentElement;
+    // Get CSS classes for each square based on its state
+    getSquareClasses(square) {
+      const classes = ['chess-square'];
+      
+      // Add base color class
+      if (square.isLight) {
+        classes.push('light-square');
+      } else {
+        classes.push('dark-square');
       }
+      
+      // Add selection highlight
+      if (this.selectedSquare === square.id) {
+        classes.push('selected');
+      }
+      
+      // Add possible move highlight
+      if (this.possibleMoves && this.possibleMoves.includes(square.id)) {
+        classes.push('possible-move');
+      }
+      
+      return classes;
+    },
 
-      const x = squareElement.dataset.x;
-      const y = squareElement.dataset.y;
-      const clickedSquare = x + y;
+    // Handle square clicks with reactive approach
+    async handleSquareClick(square) {
+      const clickedSquare = square.id;
       const pieceAtSquare = this.position[clickedSquare];
 
       // If we have a piece selected and click on a valid move, make the move
@@ -70,86 +109,12 @@ export default {
         this.possibleMoves = [];
         this.selectedSquare = null;
       }
-
-      this.updateChessboard();
     },
 
     handleResize() {
-      // Re-render the chessboard in case of resize
-      this.updateChessboard();
+      // Vue reactivity handles re-rendering automatically - no manual DOM updates needed
     },
 
-    /*
-     * GRAPHIC RENDERING METHODS
-     */
-    // This Method Creates an 8 by 8 grid using divs for each and a preset pixel size for now
-    createChessboard() {
-      const chessboard = this.$refs.chessboard;
-      chessboard.innerHTML = "";
-      chessboard.style.display = "grid";
-      chessboard.style.gridTemplateColumns = "repeat(8, 64px)";
-      chessboard.style.gridTemplateRows = "repeat(8, 64px)";
-
-      let light = true;
-      for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
-          const square = document.createElement("div");
-          square.dataset.x = x;
-          square.dataset.y = y;
-          square.classList.add("chess-square");
-          square.style.backgroundColor = light
-            ? WHITE_SQUARE_COLOR
-            : BLACK_SQUARE_COLOR;
-          square.style.width = "64px";
-          square.style.height = "64px";
-          square.addEventListener("click", this.handleClick);
-          chessboard.appendChild(square);
-          light = !light;
-        }
-        light = !light;
-      }
-      this.updateChessboard();
-    },
-
-    updateChessboard() {
-      const chessboard = this.$refs.chessboard;
-      for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
-          // The dom returns a 1 dimensional grid, so we need to multiply by 8 to get to the right row
-          const square = chessboard.children[y * 8 + x];
-          const piece = this.position[x.toString() + y.toString()];
-
-          square.innerHTML = ""; // Clear previous pieces
-          if (piece) {
-            const pieceImg = document.createElement("img");
-            pieceImg.src = this.images[piece].src;
-            pieceImg.style.width = "100%";
-            pieceImg.style.height = "100%";
-            square.appendChild(pieceImg);
-          }
-
-          // Apply highlights
-          if (this.selectedSquare === x.toString() + y.toString()) {
-            square.style.backgroundColor =
-              x % 2 === y % 2
-                ? WHITE_SQUARE_HIGHLIGHT_COLOR
-                : BLACK_SQUARE_HIGHLIGHT_COLOR;
-          } else if (
-            this.possibleMoves &&
-            this.possibleMoves.includes(x.toString() + y.toString())
-          ) {
-            square.style.backgroundColor = POSSIBLE_MOVES_HIGHLIGHT_COLOR;
-          } else {
-            square.style.backgroundColor =
-              x % 2 === y % 2 ? WHITE_SQUARE_COLOR : BLACK_SQUARE_COLOR;
-          }
-        }
-      }
-    },
-
-    /*
-     * LOAD METHODS
-     */
     async loadImages() {
       const imageSources = {
         WhitePawn: require("@/assets/pieces/wP.svg"),
@@ -191,5 +156,38 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 64px;
+  height: 64px;
+  cursor: pointer;
+}
+
+/* Base square colors */
+.light-square {
+  background-color: #DFD0B8;
+}
+
+.dark-square {
+  background-color: #948979;
+}
+
+/* Selection highlight */
+.chess-square.selected.light-square {
+  background-color: #E6E6FA;
+}
+
+.chess-square.selected.dark-square {
+  background-color: #A7D4CD;
+}
+
+/* Possible move highlight */
+.chess-square.possible-move {
+  background-color: rgba(21, 52, 72, 0.15) !important;
+}
+
+/* Piece image styling */
+.piece-image {
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Prevent image from interfering with square clicks */
 }
 </style>
