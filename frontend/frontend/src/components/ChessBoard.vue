@@ -57,25 +57,25 @@ export default {
   methods: {
     // Get CSS classes for each square based on its state
     getSquareClasses(square) {
-      const classes = ['chess-square'];
-      
+      const classes = ["chess-square"];
+
       // Add base color class
       if (square.isLight) {
-        classes.push('light-square');
+        classes.push("light-square");
       } else {
-        classes.push('dark-square');
+        classes.push("dark-square");
       }
-      
+
       // Add selection highlight
       if (this.selectedSquare === square.id) {
-        classes.push('selected');
+        classes.push("selected");
       }
-      
+
       // Add possible move highlight
       if (this.possibleMoves && this.possibleMoves.includes(square.id)) {
-        classes.push('possible-move');
+        classes.push("possible-move");
       }
-      
+
       return classes;
     },
 
@@ -163,7 +163,7 @@ export default {
 
 /* Base square colors */
 .light-square {
-  background-color: #DFD0B8;
+  background-color: #dfd0b8;
 }
 
 .dark-square {
@@ -172,11 +172,11 @@ export default {
 
 /* Selection highlight */
 .chess-square.selected.light-square {
-  background-color: #E6E6FA;
+  background-color: #e6e6fa;
 }
 
 .chess-square.selected.dark-square {
-  background-color: #A7D4CD;
+  background-color: #a7d4cd;
 }
 
 /* Possible move highlight */
