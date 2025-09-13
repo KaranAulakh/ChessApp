@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+from typing import Union, Dict, Any, List
+from flask import Flask, jsonify, Response
 from flask_cors import CORS
 from gameplay.gameState import GameState
 
@@ -11,19 +12,19 @@ CORS(app, resources={r"/*":{'origins': '*'}})
 
 # test
 @app.route('/', methods=['GET'])
-def test():
+def test() -> str:
   return ("Home page incoming")
 
 @app.route('/play', methods=['GET'])
-def play():
+def play() -> str:
   return ("Let's play chess")
 
 @app.route('/get-start-positions')
-def get_start_position():
+def get_start_position() -> Response:
     return jsonify(gameState.get_start_position())
 
 @app.route('/get-possible-moves')
-def get_possible_moves():
+def get_possible_moves() -> Union[Response, tuple[Response, int]]:
     from flask import request
     square = request.args.get('square')
     if not square:
@@ -37,7 +38,7 @@ def get_possible_moves():
     return jsonify(possible_moves)
 
 @app.route('/make-move', methods=['POST'])
-def make_move():
+def make_move() -> Union[Response, tuple[Response, int]]:
     from flask import request
     data = request.json
     start_square = data.get('start')
@@ -53,7 +54,7 @@ def make_move():
         return jsonify({"error": str(e)}), 400
 
 @app.route('/get-piece-positions')
-def get_piece_positions():
+def get_piece_positions() -> Response:
     from flask import request
     move = request.args.get('move')
     

@@ -1,26 +1,28 @@
+from typing import Dict, List, Optional, Tuple, Union, Any
 from gameplay.Pawn import Pawn
 from gameplay.Rook import Rook
 from gameplay.King import King
 from gameplay.Bishop import Bishop
 from gameplay.Queen import Queen
 from gameplay.Knight import Knight
+from gameplay.Piece import Piece
 
 class GameState:
-    INITIAL_BLACK_KING_POSITION = "40"
-    INITIAL_WHITE_KING_POSITION = "47"
+    INITIAL_BLACK_KING_POSITION: str = "40"
+    INITIAL_WHITE_KING_POSITION: str = "47"
 
-    def __init__(self):
-        self.piece_positions = self.get_start_piece_position()
-        self.possible_castles = {}
-        self.possible_moves = []
-        self.black_king_position = self.INITIAL_BLACK_KING_POSITION
-        self.white_king_position = self.INITIAL_WHITE_KING_POSITION
-        self.en_passant_positions = None
-        self.board_state_counts = {}
+    def __init__(self) -> None:
+        self.piece_positions: Dict[str, Piece] = self.get_start_piece_position()
+        self.possible_castles: Dict[str, str] = {}
+        self.possible_moves: List[str] = []
+        self.black_king_position: str = self.INITIAL_BLACK_KING_POSITION
+        self.white_king_position: str = self.INITIAL_WHITE_KING_POSITION
+        self.en_passant_positions: Optional[Tuple[str, str]] = None
+        self.board_state_counts: Dict[tuple, int] = {}
 
     # METHODS TO FIND MOVES #
     ''' Find all legal moves given the location of a piece '''
-    def get_legal_moves(self, square):
+    def get_legal_moves(self, square: str) -> List[str]:
         all_possible_moves = []
         if isinstance(self.piece_positions[square], Pawn):
             en_passant_position = self.en_passant_positions[1] if self.en_passant_positions is not None else None
@@ -32,7 +34,7 @@ class GameState:
         return self.add_castling(square)
     
     ''' Delete any illegal moves (moves that place own King in check) '''
-    def delete_invalid_moves(self, square, possible_moves):
+    def delete_invalid_moves(self, square: str, possible_moves: List[str]) -> List[str]:
         legal_moves = []
         king_position = self.white_king_position if self.piece_positions[square].is_white else self.black_king_position
 
@@ -49,7 +51,7 @@ class GameState:
         return legal_moves 
 
     ''' Add castling moves if the piece to move is the King'''
-    def add_castling(self, square):
+    def add_castling(self, square: str) -> List[str]:
         if not isinstance(self.piece_positions[square], King):
             return self.possible_moves
         
@@ -61,7 +63,7 @@ class GameState:
         return self.possible_moves
 
     '''  Find the location of en_passant for the next move, if any '''
-    def get_en_passant_location(self, start_square, destination_square):
+    def get_en_passant_location(self, start_square: str, destination_square: str) -> Optional[List[str]]:
         if isinstance(self.piece_positions[start_square], Pawn) and \
                       self.piece_positions[start_square].is_double_step(start_square[1], destination_square[1]):
             skipped_square = str(start_square[0]) + str(max(int(destination_square[1]), int(start_square[1])) - 1)
@@ -71,7 +73,7 @@ class GameState:
 
     # METHODS TO HANDLE PIECE MOVEMENT #
     ''' method to move piece in the game '''
-    def move(self, start_square, destination_square):
+    def move(self, start_square: str, destination_square: str) -> Dict[str, Any]:
         self.piece_positions = self.perform_move(start_square, destination_square, False)
 
         pawn_can_promote = None
@@ -91,7 +93,7 @@ class GameState:
     
     ''' method to temporarily perform a move and return the position of all pieces after movement
         if test_move is True there will be no changes to stored variables in the GameState class '''
-    def perform_move(self, start_square, destination_square, test_move = True):
+    def perform_move(self, start_square: str, destination_square: str, test_move: bool = True) -> Dict[str, Piece]:
         piece_positions = self.piece_positions.copy()
 
         # set prevous double step to find possible en passants
@@ -117,7 +119,7 @@ class GameState:
         return piece_positions
     
     ''' Update en_passant_positions, first_move flags, and king_positions '''
-    def update_piece_metadata(self, piece_positions, start_square, destination_square):
+    def update_piece_metadata(self, piece_positions: Dict[str, Piece], start_square: str, destination_square: str) -> None:
         self.en_passant_positions = self.get_en_passant_location(start_square, destination_square)
 
         # change first move bool if needed
@@ -132,7 +134,7 @@ class GameState:
         
     
     ''' Move the Rook to the corresponding square to complete the castle '''
-    def castle(self, castle_type, piece_positions):
+    def castle(self, castle_type: str, piece_positions: Dict[str, Piece]) -> Dict[str, Piece]:
         if castle_type == "shortWhite":
             piece_positions["57"] = piece_positions.pop("77")
         elif castle_type == "longWhite":
@@ -144,7 +146,7 @@ class GameState:
 
         return piece_positions
     
-    def promote_pawn(self, pawn_location, promote_to):
+    def promote_pawn(self, pawn_location: str, promote_to: str) -> Dict[str, str]:
         piece_map = {
             "Queen": Queen,
             "Rook": Rook,
@@ -157,7 +159,7 @@ class GameState:
 
     # GAME STATE METHODS #
     ''' return the state of the game '''
-    def get_game_state(self, is_white, position):
+    def get_game_state(self, is_white: bool, position: Dict[str, str]) -> Optional[str]:
         if not self.has_legal_moves(is_white):
             if self.is_king_in_check(is_white):
                 return "checkmate"
@@ -172,7 +174,7 @@ class GameState:
 
         return None
     
-    def is_draw_by_insufficient_material(self):
+    def is_draw_by_insufficient_material(self) -> bool:
         if len(self.piece_positions) > 4:
             return False
         # if there is one bishop and one king per side it is a draw, any other combination of four pieces is not
@@ -193,21 +195,21 @@ class GameState:
 
         return False
     
-    def update_board_state_count(self, position):
+    def update_board_state_count(self, position: Dict[str, str]) -> None:
         state = tuple(position)
         if state in self.board_state_counts:
             self.board_state_counts[state] += 1
         else:
             self.board_state_counts[state] = 1
 
-    def check_threefold_repetition(self, position):
+    def check_threefold_repetition(self, position: Dict[str, str]) -> bool:
         state = tuple(position)
         return self.board_state_counts.get(state, 0) >= 3
     
     
     # UTILITY METHODS #
     ''' Construct an Object for with piece position as keys and piece name as values for client uptake '''
-    def get_serialized_piece_positions(self):
+    def get_serialized_piece_positions(self) -> Dict[str, str]:
         serialized_positions = {}
         for position, piece in sorted(self.piece_positions.items()):
             serialized_positions[position] = piece.name
@@ -215,12 +217,12 @@ class GameState:
         return serialized_positions
         
     ''' Set/Reset the board to the starting position '''
-    def get_start_position(self):
+    def get_start_position(self) -> Dict[str, str]:
         self.piece_positions = self.get_start_piece_position()
         return self.get_serialized_piece_positions()
     
     ''' Define the intial piece positions on the board '''
-    def get_start_piece_position(self):
+    def get_start_piece_position(self) -> Dict[str, Piece]:
         positions = {
             # White Back Row
             "07": Rook(True),
@@ -253,12 +255,12 @@ class GameState:
         return positions
     
     ''' return if the given king is in check'''
-    def is_king_in_check(self, is_white):
+    def is_king_in_check(self, is_white: bool) -> bool:
         king = self.black_king_position if is_white else self.white_king_position
         return self.piece_positions[king].is_in_check(king, self.piece_positions)
     
     ''' calculate the given side has any legal moves'''
-    def has_legal_moves(self, is_white):
+    def has_legal_moves(self, is_white: bool) -> bool:
         for piece in self.piece_positions:
             if self.piece_positions[piece].is_white is not is_white and self.get_legal_moves(piece):
                 return True
