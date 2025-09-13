@@ -24,8 +24,13 @@ To run the Backend Server
 
 
 ## Running the Frontend Server
-Perform these steps if running for the first time
+Install nvm if you don't have it already
 - ```curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash```
+- add the following to your ~/.zshrc or ~/.bash or equivalent depending on the shell you are using
+- ```export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+```
 - Restart your terminal
 - ```nvm install --lts```
 - ```nvm use --lts```
