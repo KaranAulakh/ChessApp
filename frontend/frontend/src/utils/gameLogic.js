@@ -27,7 +27,9 @@ export const gameLogic = {
       }
     },
     async fetchPossibleMoves(square) {
-      const response = await this.getResponse(`/get-possible-moves?square=${square}`);
+      const response = await this.getResponse(
+        `/get-possible-moves?square=${square}`
+      );
       if (response?.success) {
         this.possibleMoves = response.data;
       } else {
@@ -35,24 +37,27 @@ export const gameLogic = {
       }
     },
     async makeMove(startSquare, endSquare) {
-      const response = await fetch(`${this.$apiBaseUrl || 'http://localhost:5001'}/make-move`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          start: startSquare,
-          end: endSquare
-        })
-      });
-      
+      const response = await fetch(
+        `${this.$apiBaseUrl || "http://localhost:5001"}/make-move`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            start: startSquare,
+            end: endSquare,
+          }),
+        }
+      );
+
       if (response.ok) {
         const result = await response.json();
         this.position = result.piecePositions;
         this.whiteToMove = !this.whiteToMove;
         return result;
       } else {
-        console.error('Failed to make move');
+        console.error("Failed to make move");
         return null;
       }
     },
