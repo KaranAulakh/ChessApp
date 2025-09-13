@@ -34,16 +34,39 @@ export default {
      * EVENT HANDLING METHODS
      */
     async handleClick(event) {
-      const squareElement = event.target;
+      // If clicking on a piece image, get the parent square element
+      let squareElement = event.target;
+      if (squareElement.tagName === "IMG") {
+        squareElement = squareElement.parentElement;
+      }
+
       const x = squareElement.dataset.x;
       const y = squareElement.dataset.y;
-      const square = this.position[x + y];
+      const clickedSquare = x + y;
+      const pieceAtSquare = this.position[clickedSquare];
 
-      // If the clicked square has a piece that belongs to the team who's turn it is, then show options
-      if (!!square && square.includes(this.whiteToMove ? "White" : "Black")) {
-        await this.fetchPossibleMoves(x + y);
-        this.selectedSquare = x + y;
-      } else {
+      // If we have a piece selected and click on a valid move, make the move
+      if (this.selectedSquare && this.possibleMoves.includes(clickedSquare)) {
+        const moveResult = await this.makeMove(
+          this.selectedSquare,
+          clickedSquare
+        );
+        if (moveResult) {
+          // Move was successful, clear selection
+          this.possibleMoves = [];
+          this.selectedSquare = null;
+        }
+      }
+      // If the clicked square has a piece that belongs to the team whose turn it is, show options
+      else if (
+        !!pieceAtSquare &&
+        pieceAtSquare.includes(this.whiteToMove ? "White" : "Black")
+      ) {
+        await this.fetchPossibleMoves(clickedSquare);
+        this.selectedSquare = clickedSquare;
+      }
+      // Otherwise, clear selection
+      else {
         this.possibleMoves = [];
         this.selectedSquare = null;
       }
