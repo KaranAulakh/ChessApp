@@ -79,24 +79,23 @@ export default {
       return classes;
     },
 
-    // Handle square clicks with reactive approach
+    // Handle square clicks
     async handleSquareClick(square) {
       const clickedSquare = square.id;
       const pieceAtSquare = this.position[clickedSquare];
 
-      // If we have a piece selected and click on a valid move, make the move
+      // Make a move ff we have a piece selected and click on a valid move
       if (this.selectedSquare && this.possibleMoves.includes(clickedSquare)) {
         const moveResult = await this.makeMove(
           this.selectedSquare,
           clickedSquare
         );
         if (moveResult) {
-          // Move was successful, clear selection
           this.possibleMoves = [];
           this.selectedSquare = null;
         }
       }
-      // If the clicked square has a piece that belongs to the team whose turn it is, show options
+      // Show possible moves if the clicked square has a piece that belongs to the team whose turn it is
       else if (
         !!pieceAtSquare &&
         pieceAtSquare.includes(this.whiteToMove ? "White" : "Black")
@@ -104,15 +103,11 @@ export default {
         await this.fetchPossibleMoves(clickedSquare);
         this.selectedSquare = clickedSquare;
       }
-      // Otherwise, clear selection
+      // Clear the selection ff this is not a valid spot to click
       else {
         this.possibleMoves = [];
         this.selectedSquare = null;
       }
-    },
-
-    handleResize() {
-      // Vue reactivity handles re-rendering automatically - no manual DOM updates needed
     },
 
     async loadImages() {
@@ -181,7 +176,21 @@ export default {
 
 /* Possible move highlight */
 .chess-square.possible-move {
-  background-color: rgba(21, 52, 72, 0.15) !important;
+  position: relative;
+}
+
+.chess-square.possible-move::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(21, 52, 72, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Piece image styling */
