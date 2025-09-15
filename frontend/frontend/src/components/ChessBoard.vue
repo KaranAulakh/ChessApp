@@ -188,7 +188,6 @@ export default {
   background-color: #a7d4cd;
 }
 
-
 /* Possible move highlight */
 .chess-square.possible-move {
   position: relative;
@@ -218,7 +217,6 @@ export default {
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
->>>>>>> 9fbbec88 (redesign timer + refactor + red x for possible captures)
 }
 
 /* Piece image styling */
