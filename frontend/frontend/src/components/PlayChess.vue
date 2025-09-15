@@ -7,13 +7,23 @@
           ref="blackTimer"
           playerName=""
           :initialTime="600"
-          :isActive="!gameState.whiteToMove"
+          :isActive="!gameState.whiteToMove && !gameState.gameEnded"
           @timer-expired="handleTimerExpired"
         />
       </div>
 
-      <!-- Chess Board -->
-      <ChessBoard @game-state-updated="handleGameStateUpdate" />
+      <!-- Chess Board with Popup Container -->
+      <div class="board-container">
+        <ChessBoard @game-state-updated="handleGameStateUpdate" />
+
+        <!-- Game End Popup positioned over chess board -->
+        <GameEndPopup
+          :visible="showPopup"
+          :gameState="gameEndState"
+          :winner="winner"
+          @new-game="startNewGame"
+        />
+      </div>
 
       <!-- White Timer -->
       <div class="timer-section bottom">
@@ -21,7 +31,7 @@
           ref="whiteTimer"
           playerName=""
           :initialTime="600"
-          :isActive="gameState.whiteToMove"
+          :isActive="gameState.whiteToMove && !gameState.gameEnded"
           @timer-expired="handleTimerExpired"
         />
       </div>
@@ -32,28 +42,65 @@
 <script>
 import ChessBoard from "./ChessBoard.vue";
 import ChessTimer from "./Timer.vue";
+import GameEndPopup from "./GameEndPopup.vue";
 
 export default {
   name: "PlayChess",
   components: {
     ChessBoard,
     ChessTimer,
+    GameEndPopup,
   },
   data() {
     return {
       gameState: {
         whiteToMove: true,
+        gameEnded: false,
+        gameStarted: false,
       },
+      showPopup: true, // Show popup by default
+      gameEndState: "welcome", // Initial welcome state
+      winner: null,
     };
   },
   methods: {
     handleGameStateUpdate(newGameState) {
       this.gameState = { ...newGameState };
+
+      // Show popup when game ends (only if game has started)
+      if (
+        this.gameState.gameStarted &&
+        newGameState.gameEnded &&
+        newGameState.gameState
+      ) {
+        this.gameEndState = newGameState.gameState;
+        this.winner =
+          newGameState.gameState === "checkmate"
+            ? newGameState.whiteToMove
+              ? "Black"
+              : "White"
+            : null;
+        this.showPopup = true;
+      }
     },
+
     handleTimerExpired(playerName) {
       console.log(`${playerName}'s time is up!`);
-      // Handle game end due to time expiry
-      // You can emit an event or call an API here
+      this.gameState.gameEnded = true;
+      this.gameEndState = "time_expired";
+      this.winner = playerName === "White" ? "Black" : "White";
+      this.showPopup = true;
+    },
+
+    startNewGame() {
+      if (!this.gameState.gameStarted) {
+        // First time starting a game
+        this.gameState.gameStarted = true;
+        this.showPopup = false;
+      } else {
+        // Restart game
+        window.location.reload();
+      }
     },
   },
 };
@@ -75,10 +122,9 @@ export default {
   gap: 0;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #333;
-  font-family: "Arial", sans-serif;
+.board-container {
+  position: relative;
+  display: inline-block;
 }
 
 .timer-section {

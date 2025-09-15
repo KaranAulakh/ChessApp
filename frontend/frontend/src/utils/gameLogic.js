@@ -7,6 +7,8 @@ export const gameLogic = {
       selectedSquare: null,
       possibleMoves: [],
       whiteToMove: true,
+      gameState: null,
+      gameEnded: false,
     };
   },
   methods: {
@@ -55,6 +57,18 @@ export const gameLogic = {
         const result = await response.json();
         this.position = result.piecePositions;
         this.whiteToMove = !this.whiteToMove;
+
+        // Check for game end conditions
+        if (result.gameState) {
+          this.gameState = result.gameState;
+          this.gameEnded = [
+            "checkmate",
+            "stalemate",
+            "insufficient material",
+            "three-fold repetition",
+          ].includes(result.gameState);
+        }
+
         return result;
       } else {
         console.error("Failed to make move");
