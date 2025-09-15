@@ -1,8 +1,6 @@
 <template>
   <div class="app-container">
-    <h1>Welcome to Chess</h1>
-
-    <!-- Black Timer (Top) -->
+    <!-- Black Timer -->
     <div class="timer-section top">
       <ChessTimer
         ref="blackTimer"
@@ -13,9 +11,10 @@
       />
     </div>
 
+    <!-- Chess Board -->
     <ChessBoard @game-state-updated="handleGameStateUpdate" />
 
-    <!-- White Timer (Bottom) -->
+    <!-- White Timer -->
     <div class="timer-section bottom">
       <ChessTimer
         ref="whiteTimer"
@@ -59,13 +58,11 @@ export default {
 </script>
 
 <style scoped>
+/* Override the global app-container spacing */
 .app-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: flex-start !important;
+  gap: 0;
   padding: 20px;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 h1 {
@@ -79,13 +76,6 @@ h1 {
   justify-content: flex-end;
   width: 512px; /* Same width as chessboard (8 * 64px) */
   padding-right: 0;
-}
-
-.timer-section.top {
-  margin-bottom: 5px;
-}
-
-.timer-section.bottom {
-  margin-top: 5px;
+  margin: 0;
 }
 </style>
