@@ -49,6 +49,7 @@ export default {
   async mounted() {
     await this.loadImages();
     await this.fetchPiecePositions("start");
+    this.emitGameState();
     window.addEventListener("resize", this.handleResize);
   },
   beforeUnmount() {
@@ -93,6 +94,7 @@ export default {
         if (moveResult) {
           this.possibleMoves = [];
           this.selectedSquare = null;
+          this.emitGameState();
         }
       }
       // Show possible moves if the clicked square has a piece that belongs to the team whose turn it is
@@ -134,6 +136,13 @@ export default {
           this.images[key] = img;
         })
       );
+    },
+
+    // Emit game state information to parent component
+    emitGameState() {
+      this.$emit("game-state-updated", {
+        whiteToMove: this.whiteToMove,
+      });
     },
   },
 };
