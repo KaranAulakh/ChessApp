@@ -7,7 +7,7 @@
           ref="blackTimer"
           playerName=""
           :initialTime="600"
-          :isActive="!gameState.whiteToMove && !gameState.gameEnded"
+          :isActive="!gameState.whiteToMove && gameInProgress"
           @timer-expired="handleTimerExpired"
         />
       </div>
@@ -31,7 +31,7 @@
           ref="whiteTimer"
           playerName=""
           :initialTime="600"
-          :isActive="gameState.whiteToMove && !gameState.gameEnded"
+          :isActive="gameState.whiteToMove && gameInProgress"
           @timer-expired="handleTimerExpired"
         />
       </div>
@@ -55,55 +55,60 @@ export default {
     return {
       gameState: {
         whiteToMove: true,
-        gameEnded: false,
-        gameStarted: false,
       },
-      showPopup: true, // Show popup by default
-      gameEndState: "welcome", // Initial welcome state
+      gameEndState: "welcome", // "welcome" | null (playing) | "checkmate" | "stalemate" etc.
       winner: null,
     };
   },
+  computed: {
+    showPopup() {
+      return this.gameEndState !== null; // Show popup when not actively playing
+    },
+    gameInProgress() {
+      return this.gameEndState === null;
+    },
+    gameStarted() {
+      return this.gameEndState !== "welcome";
+    },
+  },
   methods: {
     handleGameStateUpdate(newGameState) {
-      // Preserve gameStarted flag when updating state
-      this.gameState = {
-        ...newGameState,
-        gameStarted: this.gameState.gameStarted,
-      };
+      this.gameState = { ...newGameState };
 
       // Show popup when game ends (only if game has started)
       if (
-        this.gameState.gameStarted &&
+        this.gameStarted &&
         newGameState.gameEnded &&
         newGameState.gameState
       ) {
         this.gameEndState = newGameState.gameState;
-        this.winner =
-          newGameState.gameState === "checkmate"
-            ? newGameState.whiteToMove
-              ? "Black"
-              : "White"
-            : null;
-        this.showPopup = true;
+        this.setWinner(newGameState.gameState, newGameState.whiteToMove);
       }
     },
 
     handleTimerExpired(playerName) {
       console.log(`${playerName}'s time is up!`);
-      this.gameState.gameEnded = true;
       this.gameEndState = "time_expired";
-      this.winner = playerName === "White" ? "Black" : "White";
-      this.showPopup = true;
+      this.setWinner("time_expired", null, playerName);
     },
 
     startNewGame() {
-      if (!this.gameState.gameStarted) {
-        // First time starting a game
-        this.gameState.gameStarted = true;
-        this.showPopup = false;
+      if (this.gameEndState === "welcome") {
+        // Start the game
+        this.gameEndState = null;
       } else {
         // Restart game
         window.location.reload();
+      }
+    },
+
+    setWinner(gameEndState, whiteToMove, timerExpiredPlayer = null) {
+      if (gameEndState === "checkmate") {
+        this.winner = whiteToMove ? "Black" : "White";
+      } else if (gameEndState === "time_expired" && timerExpiredPlayer) {
+        this.winner = timerExpiredPlayer === "White" ? "Black" : "White";
+      } else {
+        this.winner = null; // Draw cases
       }
     },
   },

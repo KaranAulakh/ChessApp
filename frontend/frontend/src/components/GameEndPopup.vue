@@ -1,13 +1,13 @@
 <template>
-  <div v-if="visible" class="popup-overlay" @click="close">
-    <div class="popup-container" @click.stop>
+  <div v-if="visible" class="popup-overlay">
+    <div class="popup-container">
       <div class="popup-header">
-        <h2>{{ getTitle() }}</h2>
+        <h2>{{ popupContent.title }}</h2>
       </div>
 
       <div class="popup-content">
-        <div class="game-result-icon">{{ getIcon() }}</div>
-        <p class="result-message">{{ getMessage() }}</p>
+        <div class="game-result-icon">{{ popupContent.icon }}</div>
+        <p class="result-message">{{ popupContent.message }}</p>
         <div v-if="winner" class="winner-info">
           <span class="crown">👑</span>
           <span class="winner-text">{{ winner }} wins!</span>
@@ -16,7 +16,7 @@
 
       <div class="popup-actions">
         <button class="btn btn-primary" @click="newGame">
-          {{ gameState === "welcome" ? "Start Game" : "New Game" }}
+          {{ buttonText }}
         </button>
       </div>
     </div>
@@ -40,60 +40,55 @@ export default {
       default: null,
     },
   },
+  computed: {
+    buttonText() {
+      return this.gameState === "welcome" ? "Start Game" : "New Game";
+    },
+
+    popupContent() {
+      const content = {
+        welcome: {
+          title: "Welcome to Chess!",
+          icon: "♟️",
+          message: "Ready to play a game of chess? Click Start Game to begin!",
+        },
+        checkmate: {
+          title: "Checkmate!",
+          icon: "🏆",
+          message: "The king has been checkmated!",
+        },
+        stalemate: {
+          title: "Stalemate!",
+          icon: "🤝",
+          message: "No legal moves available!",
+        },
+        "insufficient material": {
+          title: "Draw!",
+          icon: "⚖️",
+          message: "Insufficient material to checkmate!",
+        },
+        "three-fold repetition": {
+          title: "Draw!",
+          icon: "🔄",
+          message: "Position repeated three times!",
+        },
+        time_expired: {
+          title: "Time's Up!",
+          icon: "⏰",
+          message: "Time has expired!",
+        },
+      };
+
+      return (
+        content[this.gameState] || {
+          title: "Game Over!",
+          icon: "⚖️",
+          message: "The game has ended!",
+        }
+      );
+    },
+  },
   methods: {
-    getTitle() {
-      switch (this.gameState) {
-        case "welcome":
-          return "Welcome to Chess!";
-        case "checkmate":
-          return "Checkmate!";
-        case "stalemate":
-          return "Stalemate!";
-        case "insufficient material":
-          return "Draw!";
-        case "three-fold repetition":
-          return "Draw!";
-        case "time_expired":
-          return "Time's Up!";
-        default:
-          return "Game Over!";
-      }
-    },
-
-    getIcon() {
-      switch (this.gameState) {
-        case "welcome":
-          return "♟️";
-        case "checkmate":
-          return "🏆";
-        case "stalemate":
-          return "🤝";
-        case "time_expired":
-          return "⏰";
-        default:
-          return "⚖️";
-      }
-    },
-
-    getMessage() {
-      switch (this.gameState) {
-        case "welcome":
-          return "Click Start Game to begin!";
-        case "checkmate":
-          return "The king has been checkmated!";
-        case "stalemate":
-          return "Draw by stalemate";
-        case "insufficient material":
-          return "Draw by insufficient materials";
-        case "three-fold repetition":
-          return "Draw by three fold repition";
-        case "time_expired":
-          return "Time has expired";
-        default:
-          return "The game has ended!";
-      }
-    },
-
     newGame() {
       this.$emit("new-game");
     },
