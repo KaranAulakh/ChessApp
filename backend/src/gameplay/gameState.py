@@ -167,6 +167,7 @@ class GameState:
                 return "stalemate"
         if self.is_draw_by_insufficient_material():
             return "insufficient material"
+        # todo - three fold repititon state needs to be reset between games!
         if self.check_threefold_repetition(position):
             return "three-fold repetition"
         if self.is_king_in_check(is_white):

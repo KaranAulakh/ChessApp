@@ -6,7 +6,7 @@
         <ChessTimer
           ref="blackTimer"
           playerName=""
-          :initialTime="600"
+          :initialTime="3"
           :isActive="!gameState.whiteToMove && gameInProgress"
           @timer-expired="handleTimerExpired"
         />
@@ -43,6 +43,12 @@
 import ChessBoard from "./ChessBoard.vue";
 import ChessTimer from "./Timer.vue";
 import GameEndPopup from "./GameEndPopup.vue";
+
+/*
+ * TODO - need to declare winner when time is up
+  *     - redesign the colors for declared winner
+  *     - new game popup goes to start game popup, should go straight to new game
+ */
 
 export default {
   name: "PlayChess",

@@ -50,7 +50,7 @@ export default {
         welcome: {
           title: "Welcome to Chess!",
           icon: "♟️",
-          message: "Ready to play a game of chess? Click Start Game to begin!",
+          message: "Click Start Game to begin!",
         },
         checkmate: {
           title: "Checkmate!",
@@ -58,19 +58,19 @@ export default {
           message: "The king has been checkmated!",
         },
         stalemate: {
-          title: "Stalemate!",
+          title: "Draw!",
           icon: "🤝",
-          message: "No legal moves available!",
+          message: "Draw due to stalemate",
         },
         "insufficient material": {
           title: "Draw!",
           icon: "⚖️",
-          message: "Insufficient material to checkmate!",
+          message: "Draw due to insufficient material",
         },
         "three-fold repetition": {
           title: "Draw!",
           icon: "🔄",
-          message: "Position repeated three times!",
+          message: "Draw due to three fold repetition",
         },
         time_expired: {
           title: "Time's Up!",
