@@ -59,25 +59,18 @@ export default {
 </script>
 
 <style scoped>
-.player-label {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
 .timer-display {
   font-size: 24px;
   margin-bottom: 4px;
 }
 
-.pulse-glow {
-  animation: pulse-glow 2s infinite;
-}
-
 @keyframes pulse-glow {
-  0%, 100% { text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); }
-  50% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+  0%,
+  100% {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
 }
 </style>

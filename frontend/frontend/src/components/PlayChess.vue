@@ -1,28 +1,30 @@
 <template>
   <div class="app-container">
-    <!-- Black Timer -->
-    <div class="timer-section top">
-      <ChessTimer
-        ref="blackTimer"
-        playerName=""
-        :initialTime="600"
-        :isActive="!gameState.whiteToMove"
-        @timer-expired="handleTimerExpired"
-      />
-    </div>
+    <div class="game-container">
+      <!-- Black Timer -->
+      <div class="timer-section top">
+        <ChessTimer
+          ref="blackTimer"
+          playerName=""
+          :initialTime="600"
+          :isActive="!gameState.whiteToMove"
+          @timer-expired="handleTimerExpired"
+        />
+      </div>
 
-    <!-- Chess Board -->
-    <ChessBoard @game-state-updated="handleGameStateUpdate" />
+      <!-- Chess Board -->
+      <ChessBoard @game-state-updated="handleGameStateUpdate" />
 
-    <!-- White Timer -->
-    <div class="timer-section bottom">
-      <ChessTimer
-        ref="whiteTimer"
-        playerName=""
-        :initialTime="600"
-        :isActive="gameState.whiteToMove"
-        @timer-expired="handleTimerExpired"
-      />
+      <!-- White Timer -->
+      <div class="timer-section bottom">
+        <ChessTimer
+          ref="whiteTimer"
+          playerName=""
+          :initialTime="600"
+          :isActive="gameState.whiteToMove"
+          @timer-expired="handleTimerExpired"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -60,9 +62,17 @@ export default {
 <style scoped>
 /* Override the global app-container spacing */
 .app-container {
-  justify-content: flex-start !important;
+  justify-content: center !important;
+  align-items: center !important;
   gap: 0;
   padding: 20px;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
 
 h1 {

@@ -74,7 +74,12 @@ export default {
 
       // Add possible move highlight
       if (this.possibleMoves && this.possibleMoves.includes(square.id)) {
-        classes.push("possible-move");
+        // Check if there's an enemy piece on this square
+        const hasEnemyPiece =
+          square.piece &&
+          !square.piece.includes(this.whiteToMove ? "White" : "Black");
+
+        classes.push(hasEnemyPiece ? "possible-capture" : "possible-move");
       }
 
       return classes;
@@ -183,11 +188,11 @@ export default {
   background-color: #a7d4cd;
 }
 
+
 /* Possible move highlight */
 .chess-square.possible-move {
   position: relative;
 }
-
 .chess-square.possible-move::before {
   content: "";
   position: absolute;
@@ -200,6 +205,20 @@ export default {
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
+}
+
+.chess-square.possible-capture::before {
+  content: "✕";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  color: rgba(220, 53, 69, 0.8);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+>>>>>>> 9fbbec88 (redesign timer + refactor + red x for possible captures)
 }
 
 /* Piece image styling */
