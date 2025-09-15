@@ -65,7 +65,11 @@ export default {
   },
   methods: {
     handleGameStateUpdate(newGameState) {
-      this.gameState = { ...newGameState };
+      // Preserve gameStarted flag when updating state
+      this.gameState = {
+        ...newGameState,
+        gameStarted: this.gameState.gameStarted,
+      };
 
       // Show popup when game ends (only if game has started)
       if (

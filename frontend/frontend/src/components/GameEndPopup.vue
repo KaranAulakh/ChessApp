@@ -78,17 +78,17 @@ export default {
     getMessage() {
       switch (this.gameState) {
         case "welcome":
-          return "Ready to play a game of chess? Click Start Game to begin!";
+          return "Click Start Game to begin!";
         case "checkmate":
           return "The king has been checkmated!";
         case "stalemate":
-          return "No legal moves available!";
+          return "Draw by stalemate";
         case "insufficient material":
-          return "Insufficient material to checkmate!";
+          return "Draw by insufficient materials";
         case "three-fold repetition":
-          return "Position repeated three times!";
+          return "Draw by three fold repition";
         case "time_expired":
-          return "Time has expired!";
+          return "Time has expired";
         default:
           return "The game has ended!";
       }
@@ -118,7 +118,7 @@ export default {
 }
 
 .popup-container {
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  background: #2c3e50;
   border-radius: 12px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
   padding: 24px;
@@ -126,7 +126,6 @@ export default {
   width: 85%;
   text-align: center;
   animation: popup-appear 0.3s ease-out;
-  border: 2px solid #e9ecef;
 }
 
 @keyframes popup-appear {
@@ -142,7 +141,7 @@ export default {
 
 .popup-header h2 {
   margin: 0 0 16px 0;
-  color: #2c3e50;
+  color: #908f8f;
   font-family: "Copperplate", fantasy;
   font-size: 22px;
 }
@@ -154,7 +153,7 @@ export default {
 
 .result-message {
   font-size: 14px;
-  color: #2c3e50;
+  color: #908f8f;
   margin: 0 0 16px 0;
 }
 
