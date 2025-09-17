@@ -147,6 +147,8 @@ export default {
     emitGameState() {
       this.$emit("game-state-updated", {
         whiteToMove: this.whiteToMove,
+        gameState: this.gameState,
+        gameEnded: this.gameEnded,
       });
     },
   },

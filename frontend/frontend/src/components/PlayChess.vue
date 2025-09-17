@@ -7,13 +7,23 @@
           ref="blackTimer"
           playerName=""
           :initialTime="600"
-          :isActive="!gameState.whiteToMove"
+          :isActive="!gameState.whiteToMove && gameInProgress"
           @timer-expired="handleTimerExpired"
         />
       </div>
 
-      <!-- Chess Board -->
-      <ChessBoard @game-state-updated="handleGameStateUpdate" />
+      <!-- Chess Board with Popup Container -->
+      <div class="board-container">
+        <ChessBoard @game-state-updated="handleGameStateUpdate" />
+
+        <!-- Game End Popup positioned over chess board -->
+        <GameEndPopup
+          :visible="showPopup"
+          :gameState="gameEndState"
+          :winner="winner"
+          @new-game="startNewGame"
+        />
+      </div>
 
       <!-- White Timer -->
       <div class="timer-section bottom">
@@ -21,7 +31,7 @@
           ref="whiteTimer"
           playerName=""
           :initialTime="600"
-          :isActive="gameState.whiteToMove"
+          :isActive="gameState.whiteToMove && gameInProgress"
           @timer-expired="handleTimerExpired"
         />
       </div>
@@ -32,28 +42,80 @@
 <script>
 import ChessBoard from "./ChessBoard.vue";
 import ChessTimer from "./Timer.vue";
+import GameEndPopup from "./GameEndPopup.vue";
+
+/*
+ * TODO - need to declare winner when time is up
+ *     - redesign the colors for declared winner
+ *     - new game popup goes to start game popup, should go straight to new game
+ */
 
 export default {
   name: "PlayChess",
   components: {
     ChessBoard,
     ChessTimer,
+    GameEndPopup,
   },
   data() {
     return {
       gameState: {
         whiteToMove: true,
       },
+      gameEndState: "welcome",
+      winner: null,
     };
+  },
+  computed: {
+    showPopup() {
+      return this.gameEndState !== null; // Show popup when not actively playing
+    },
+    gameInProgress() {
+      return this.gameEndState === null;
+    },
+    gameStarted() {
+      return this.gameEndState !== "welcome";
+    },
   },
   methods: {
     handleGameStateUpdate(newGameState) {
       this.gameState = { ...newGameState };
+
+      // Show popup when game ends (only if game has started)
+      if (
+        this.gameStarted &&
+        newGameState.gameEnded &&
+        newGameState.gameState
+      ) {
+        this.gameEndState = newGameState.gameState;
+        this.setWinner(newGameState.gameState, newGameState.whiteToMove);
+      }
     },
+
     handleTimerExpired(playerName) {
       console.log(`${playerName}'s time is up!`);
-      // Handle game end due to time expiry
-      // You can emit an event or call an API here
+      this.gameEndState = "time_expired";
+      this.setWinner("time_expired", null, playerName);
+    },
+
+    startNewGame() {
+      if (this.gameEndState === "welcome") {
+        // Start the game
+        this.gameEndState = null;
+      } else {
+        // Restart game
+        window.location.reload();
+      }
+    },
+
+    setWinner(gameEndState, whiteToMove, timerExpiredPlayer = null) {
+      if (gameEndState === "checkmate") {
+        this.winner = whiteToMove ? "Black" : "White";
+      } else if (gameEndState === "time_expired" && timerExpiredPlayer) {
+        this.winner = timerExpiredPlayer === "White" ? "Black" : "White";
+      } else {
+        this.winner = null; // Draw cases
+      }
     },
   },
 };
@@ -75,10 +137,9 @@ export default {
   gap: 0;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #333;
-  font-family: "Arial", sans-serif;
+.board-container {
+  position: relative;
+  display: inline-block;
 }
 
 .timer-section {

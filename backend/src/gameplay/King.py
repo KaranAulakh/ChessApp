@@ -59,7 +59,7 @@ class King(Piece):
         x, y = int(square[0]), int(square[1])
         opponent = "Black" if self.is_white else "White"
 
-        # Check if there's an opponent queen or bishop eyeing the queen 
+        # Check the diagonal lines from the king for queen or bishop
         directions = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
         for dx, dy in directions:
             x_increment, y_increment = x + dx, y + dy
@@ -72,7 +72,7 @@ class King(Piece):
                 x_increment += dx
                 y_increment += dy
         
-        # check if there is an opponent rook or queen eyeing the queen
+        # check the straight lines from the king for queen or rook
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
         for dx, dy in directions:
             x_increment, y_increment = x + dx, y + dy

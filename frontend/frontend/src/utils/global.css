@@ -24,10 +24,36 @@ html, body {
   padding: 0px;
 }
 
-p, h1 {
+p, h1, .popup-header h2 {
   font-family: "Copperplate", fantasy; 
   color: #908f8f; 
   text-align: center;
+}
+
+span {
+  font-family: "Copperplate", fantasy; 
+  color: #ffffff; 
+  text-align: center;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #45a049;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #45a049;
+  transform: translateY(-2px);
 }
 
 /* Timer utility classes */
