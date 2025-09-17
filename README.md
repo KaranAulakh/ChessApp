@@ -8,7 +8,7 @@ The app supports standard chess rules, including legal move validation, game sta
 
 ## Running the Backend Server
 Perform these steps if running for the first time
-- Make sure you have python3 and Pipenv installed
+- Make sure you have python3 and pipenv installed
 - Create a virtual enviornment (alternatively you can use homebrew to install system-wide)
   - ```python3 -m venv venv```
 - Activate the virtual enviornment
@@ -18,8 +18,8 @@ Perform these steps if running for the first time
   - ```pip install -r backend/requirements.txt```
 
 To run the Backend Server
-- ```pipenv shell```
-- ```python3 src/main.py```
+- Make sure virtual enviornment if you are using one. You may also install all of the above system wide
+- ```python3 backend/src/main.py```
 
 
 

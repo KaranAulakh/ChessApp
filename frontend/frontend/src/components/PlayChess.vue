@@ -6,7 +6,7 @@
         <ChessTimer
           ref="blackTimer"
           playerName=""
-          :initialTime="3"
+          :initialTime="600"
           :isActive="!gameState.whiteToMove && gameInProgress"
           @timer-expired="handleTimerExpired"
         />
@@ -46,8 +46,8 @@ import GameEndPopup from "./GameEndPopup.vue";
 
 /*
  * TODO - need to declare winner when time is up
-  *     - redesign the colors for declared winner
-  *     - new game popup goes to start game popup, should go straight to new game
+ *     - redesign the colors for declared winner
+ *     - new game popup goes to start game popup, should go straight to new game
  */
 
 export default {
@@ -62,7 +62,7 @@ export default {
       gameState: {
         whiteToMove: true,
       },
-      gameEndState: "welcome", // "welcome" | null (playing) | "checkmate" | "stalemate" etc.
+      gameEndState: "welcome",
       winner: null,
     };
   },
