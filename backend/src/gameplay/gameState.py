@@ -20,6 +20,12 @@ class GameState:
         self.en_passant_positions: Optional[Tuple[str, str]] = None
         self.board_state_counts: Dict[tuple, int] = {}
 
+    def get_piece_positions(self, isStart: bool) -> Dict[str, str]:
+        if isStart:
+            return get_start_position
+        
+        return get_serialized_piece_positions
+
     # METHODS TO FIND MOVES #
     ''' Find all legal moves given the location of a piece '''
     def get_legal_moves(self, square: str) -> List[str]:
