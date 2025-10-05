@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <h1>Échecs</h1>
+    <h1>Chess Lab</h1>
     <ul>
       <li @click="navigateTo('/')">
         <icon-images name="home"></icon-images>
@@ -39,7 +39,7 @@ export default {
 
 <style scoped>
 .sidebar {
-  width: 150px;
+  width: 200px;
   background-color: #22313f;
   color: #908f8f;
   min-height: 100vh;
